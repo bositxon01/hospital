@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: hospital_system
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hospital_system
+    username: postgres
+    password: 123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: croni075@gmail.com
+    password: rkav vxni npzz gyis
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+server:
+  address: 0.0.0.0

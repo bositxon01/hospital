@@ -1,0 +1,18 @@
+package hospital.hospital_system.enums;
+
+public enum PermissionEnum {
+    CREATE_DOCTOR,
+    EDIT_DOCTOR,
+    DELETE_DOCTOR,
+    VIEW_DOCTOR,
+
+    CREATE_PATIENT,
+    EDIT_PATIENT,
+    DELETE_PATIENT,
+    VIEW_PATIENT,
+
+    CREATE_APPOINTMENT,
+    EDIT_APPOINTMENT,
+    DELETE_APPOINTMENT,
+    VIEW_APPOINTMENT
+}
