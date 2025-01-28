@@ -26,6 +26,7 @@ public class SecurityConfig {
         http.userDetailsService(dbUserDetailsService);
 
         http.authorizeHttpRequests(conf -> conf
+
                 .requestMatchers(
                         "/auth/sign-up",
                         "/auth/login",
@@ -36,12 +37,6 @@ public class SecurityConfig {
                 .permitAll()
                 .anyRequest()
                 .authenticated());
-
-        http.formLogin(conf -> conf
-                .loginPage("/auth/login")
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .loginProcessingUrl("/auth/login"));
 
         return http.build();
     }
