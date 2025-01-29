@@ -14,7 +14,6 @@ import java.sql.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity
 @MappedSuperclass
 public class Person {
 
