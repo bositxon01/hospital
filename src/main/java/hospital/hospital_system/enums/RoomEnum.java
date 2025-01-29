@@ -1,0 +1,24 @@
+package hospital.hospital_system.enums;
+
+public enum RoomEnum {
+    ROOM_1,
+    ROOM_2,
+    ROOM_3,
+    ROOM_4,
+    ROOM_5,
+    ROOM_6,
+    ROOM_7,
+    ROOM_8,
+    ROOM_9,
+    ROOM_10,
+    ROOM_11,
+    ROOM_12,
+    ROOM_13,
+    ROOM_14,
+    ROOM_15,
+    ROOM_16,
+    ROOM_17,
+    ROOM_18,
+    ROOM_19,
+    ROOM_20
+}
