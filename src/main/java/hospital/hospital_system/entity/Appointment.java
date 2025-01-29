@@ -1,12 +1,8 @@
 package hospital.hospital_system.entity;
 
-import hospital.hospital_system.enums.AppointmentStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.FutureOrPresent;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
 
 import java.sql.Timestamp;
 
@@ -14,6 +10,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 @Entity
 public class Appointment {
     @Id
@@ -21,14 +18,22 @@ public class Appointment {
     private Integer id;
 
     @ManyToOne
-    private Doctor doctor;
+    private Employee employee;
 
     @ManyToOne
     private Patient patient;
 
-    @FutureOrPresent(message = "Appointment time must be in the present or future")
+    @OneToOne
+    private Room room;
+
+    @NotBlank
+    @Column(nullable = false)
     private Timestamp appointmentTime;
 
-    @Enumerated(EnumType.STRING)
-    private AppointmentStatus status;
+    @OneToOne(mappedBy = "appointment")
+    private AppointmentResult appointmentResult;
+
+    @OneToOne(mappedBy = "nextAppointment")
+    private AppointmentResult nextappointmentResult;
+
 }
