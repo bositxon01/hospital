@@ -15,11 +15,7 @@ import java.sql.Date;
 @Getter
 @Setter
 @MappedSuperclass
-public class Person {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class Person extends Parent {
 
     @NotBlank(message = "Firstname cannot be blank")
     @Column(nullable = false)
