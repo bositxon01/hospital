@@ -14,10 +14,7 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
-public class Room {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class Room extends AbsIntegerEntity {
 
     @NotBlank
     @Column(nullable = false)

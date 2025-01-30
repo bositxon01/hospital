@@ -11,10 +11,7 @@ import lombok.*;
 @Setter
 @Entity
 @ToString
-public class Attachment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class Attachment extends AbsIntegerEntity {
 
     @NotBlank(message = "FileName cannot be blank")
     @Column(nullable = false, unique = true, columnDefinition = "text")

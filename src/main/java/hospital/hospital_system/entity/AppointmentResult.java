@@ -1,6 +1,8 @@
 package hospital.hospital_system.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -10,10 +12,7 @@ import lombok.*;
 @Setter
 @ToString
 @Entity
-public class AppointmentResult {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class AppointmentResult extends AbsIntegerEntity {
 
     @OneToOne
     private Appointment appointment;

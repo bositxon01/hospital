@@ -9,10 +9,7 @@ import lombok.*;
 @Setter
 @ToString
 @Entity
-public class EmployeeRoom {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class EmployeeRoom extends AbsIntegerEntity {
 
     @ManyToOne
     private Room room;

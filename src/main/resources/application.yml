@@ -2,9 +2,9 @@ spring:
   application:
     name: hospital_system
   datasource:
-    url: jdbc:postgresql://localhost:5432/hospital
+    url: jdbc:postgresql://localhost:5432/hospital_system
     username: postgres
-    password: root123
+    password: Abdujalil2005
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -14,7 +14,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: croni075@gmail.com
-    password: rkavvxninpzzgyis # App Password ishlatishingizni tavsiya qilaman
+    password: rkav vxni npzz gyis
     protocol: smtp
     properties:
       mail:
@@ -23,4 +23,4 @@ spring:
           starttls:
             enable: true
 server:
-  address: 0.0.0.0 # Agar umumiy tarmoqda ishlatmasangiz, localhost qo'llang
+  address: 0.0.0.0

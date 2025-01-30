@@ -1,6 +1,10 @@
 package hospital.hospital_system.entity;
 
-import jakarta.persistence.*;
+import hospital.hospital_system.enums.DayEnum;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 
 @AllArgsConstructor
@@ -9,18 +13,15 @@ import lombok.*;
 @Setter
 @ToString
 @Entity
-public class WorkTime {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
+public class WorkTime extends AbsIntegerEntity {
     @ManyToOne
-    private Day day;
+    private Employee employee;
+
+    @Enumerated(EnumType.STRING)
+    private DayEnum day;
 
     @ManyToOne
     private Turn turn;
 
-    @ManyToOne
-    private Employee employee;
 
 }

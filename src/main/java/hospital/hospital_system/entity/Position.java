@@ -1,6 +1,8 @@
 package hospital.hospital_system.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
@@ -13,11 +15,7 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
-public class Position {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
+public class Position extends AbsIntegerEntity {
     @NotBlank
     @Column(unique = true, nullable = false)
     private String name;
@@ -31,5 +29,5 @@ public class Position {
     private List<PositionPermission> positionPermissionList;
 
     @OneToMany(mappedBy = "position")
-    private List<Employee> employeeList;
+    private List<User> users;
 }

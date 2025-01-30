@@ -14,10 +14,7 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
-public class Turn {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class Turn extends AbsIntegerEntity {
 
     @NotBlank
     @Column(unique = true, nullable = false)
