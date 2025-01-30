@@ -26,12 +26,15 @@ public class Employee extends Person {
     private User user;
 
     @OneToMany(mappedBy = "employee")
+    @ToString.Exclude
     private List<Appointment> appointments;
 
     @OneToMany(mappedBy = "employee")
+    @ToString.Exclude
     private List<WorkTime> workTimes;
 
     @OneToMany(mappedBy = "employee")
+    @ToString.Exclude
     private List<EmployeeRoom> employeeRooms;
 
 }

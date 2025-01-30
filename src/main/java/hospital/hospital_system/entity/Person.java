@@ -4,10 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Date;
 
@@ -15,6 +12,7 @@ import java.sql.Date;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 @MappedSuperclass
 public class Person extends AbsIntegerEntity {
 

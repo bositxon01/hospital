@@ -1,8 +1,10 @@
 package hospital.hospital_system.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 @AllArgsConstructor
@@ -29,7 +31,7 @@ public class Attachment extends AbsIntegerEntity {
     @Column(nullable = false, columnDefinition = "text", unique = true)
     private String path;
 
-    @Positive
+    @Min(1)
     private Long size;
 
     @OneToOne(mappedBy = "attachment")

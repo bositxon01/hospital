@@ -26,7 +26,6 @@ public class Appointment extends AbsIntegerEntity {
     @OneToOne
     private Room room;
 
-    @NotBlank
     @Column(nullable = false)
     private Timestamp appointmentTime;
 
@@ -34,6 +33,6 @@ public class Appointment extends AbsIntegerEntity {
     private AppointmentResult appointmentResult;
 
     @OneToOne(mappedBy = "nextAppointment")
-    private AppointmentResult nextappointmentResult;
+    private AppointmentResult nextAppointmentResult;
 
 }

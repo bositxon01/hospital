@@ -20,7 +20,6 @@ public class Position extends AbsIntegerEntity {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @NotBlank
     @Column(nullable = false)
     @Positive
     private Double salary;
