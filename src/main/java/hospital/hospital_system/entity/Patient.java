@@ -17,6 +17,10 @@ public class Patient extends Person {
     @OneToOne
     private Complaint complaint;
 
+    @OneToOne
+    private User user;
+
     @OneToMany(mappedBy = "patient")
     private List<Appointment> appointments;
+
 }

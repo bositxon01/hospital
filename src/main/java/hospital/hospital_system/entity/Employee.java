@@ -1,9 +1,9 @@
 package hospital.hospital_system.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.List;
@@ -15,17 +15,15 @@ import java.util.List;
 @ToString
 @Entity
 public class Employee extends Person {
-    @OneToOne
-    private Login login;
 
     @OneToOne
     private Attachment attachment;
 
-    @ManyToOne
-    private Position position;
+
+    private String specialization;
 
     @OneToOne
-    private Specialization specialization;
+    private User user;
 
     @OneToMany(mappedBy = "employee")
     private List<Appointment> appointments;

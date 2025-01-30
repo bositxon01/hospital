@@ -1,6 +1,7 @@
 package hospital.hospital_system.entity;
 
 
+import hospital.hospital_system.enums.PermissionEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,15 +11,12 @@ import lombok.*;
 @Setter
 @ToString
 @Entity
-public class PositionPermission {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class PositionPermission extends AbsIntegerEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Position position;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Permission permission;
+    @Enumerated(EnumType.STRING)
+    private PermissionEnum permission;
 
 }

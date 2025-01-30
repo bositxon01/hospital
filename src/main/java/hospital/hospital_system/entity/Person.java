@@ -1,6 +1,7 @@
 package hospital.hospital_system.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import java.sql.Date;
 @Getter
 @Setter
 @MappedSuperclass
-public class Person extends Parent {
+public class Person extends AbsIntegerEntity {
 
     @NotBlank(message = "Firstname cannot be blank")
     @Column(nullable = false)

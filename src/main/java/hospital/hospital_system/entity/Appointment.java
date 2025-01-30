@@ -1,6 +1,9 @@
 package hospital.hospital_system.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -12,10 +15,7 @@ import java.sql.Timestamp;
 @Setter
 @ToString
 @Entity
-public class Appointment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class Appointment extends AbsIntegerEntity {
 
     @ManyToOne
     private Employee employee;
