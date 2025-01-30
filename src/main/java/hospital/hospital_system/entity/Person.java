@@ -24,7 +24,6 @@ public class Person extends AbsIntegerEntity {
     @Column(nullable = false)
     private String lastName;
 
-    @NotBlank(message = "Date of birth cannot be blank")
     @Past
     @Column(nullable = false)
     private Date dateOfBirth;
