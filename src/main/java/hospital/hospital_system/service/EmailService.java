@@ -1,4 +1,4 @@
-package hospital.hospital_system.config;
+package hospital.hospital_system.service;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

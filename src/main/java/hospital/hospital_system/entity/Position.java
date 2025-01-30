@@ -1,5 +1,6 @@
 package hospital.hospital_system.entity;
 
+import hospital.hospital_system.enums.PermissionEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -25,8 +26,10 @@ public class Position extends AbsIntegerEntity {
     private Double salary;
 
     @OneToMany(mappedBy = "position")
+    @ToString.Exclude
     private List<PositionPermission> positionPermissionList;
 
     @OneToMany(mappedBy = "position")
+    @ToString.Exclude
     private List<User> users;
 }
