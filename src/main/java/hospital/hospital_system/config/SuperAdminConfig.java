@@ -1,6 +1,9 @@
 package hospital.hospital_system.config;
 
-import hospital.hospital_system.entity.*;
+import hospital.hospital_system.entity.Employee;
+import hospital.hospital_system.entity.Position;
+import hospital.hospital_system.entity.PositionPermission;
+import hospital.hospital_system.entity.User;
 import hospital.hospital_system.enums.PermissionEnum;
 import hospital.hospital_system.repository.EmployeeRepository;
 import hospital.hospital_system.repository.PositionPermissionRepository;
@@ -15,7 +18,6 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @Component
@@ -56,8 +58,8 @@ public class SuperAdminConfig {
                         }
                 );
 
+        User user = new User();
         if (userRepository.findByUsername("SUPERADMIN").isEmpty()) {
-            User user = new User();
             user.setUsername("SUPERADMIN@gmail.com");
             user.setPassword(passwordEncoder.encode("SUPERPASSWORD"));
             user.setPosition(position);
@@ -71,6 +73,7 @@ public class SuperAdminConfig {
         employee.setFirstName("SUPERADMIN");
         employee.setLastName("SUPERADMIN");
         employee.setDateOfBirth(birthDate);
+        employee.setUser(user);
         employeeRepository.save(employee);
     }
 }
