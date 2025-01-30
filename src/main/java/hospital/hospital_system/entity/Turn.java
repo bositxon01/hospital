@@ -30,5 +30,6 @@ public class Turn extends AbsIntegerEntity {
     private Time endTime;
 
     @OneToMany(mappedBy = "turn")
+    @ToString.Exclude
     private List<WorkTime> workTimes;
 }

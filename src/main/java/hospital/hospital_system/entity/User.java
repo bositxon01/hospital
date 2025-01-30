@@ -6,10 +6,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,7 +33,11 @@ public class User extends AbsIntegerEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return position.getPositionPermissionList()
+                .stream()
+                .map(PositionPermission::getPermission)
+                .map(permissionEnum -> new SimpleGrantedAuthority(permissionEnum.name()))
+                .toList();
     }
 
     @OneToOne(mappedBy = "user")

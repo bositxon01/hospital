@@ -14,6 +14,7 @@ import lombok.*;
 public class PositionPermission extends AbsIntegerEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Position position;
 
     @Enumerated(EnumType.STRING)

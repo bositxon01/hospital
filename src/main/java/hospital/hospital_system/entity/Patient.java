@@ -21,6 +21,7 @@ public class Patient extends Person {
     private User user;
 
     @OneToMany(mappedBy = "patient")
+    @ToString.Exclude
     private List<Appointment> appointments;
 
 }

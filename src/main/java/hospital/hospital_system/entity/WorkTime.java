@@ -1,10 +1,7 @@
 package hospital.hospital_system.entity;
 
 import hospital.hospital_system.enums.DayEnum;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 @AllArgsConstructor
@@ -18,6 +15,7 @@ public class WorkTime extends AbsIntegerEntity {
     private Employee employee;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private DayEnum day;
 
     @ManyToOne
