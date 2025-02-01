@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Form</title>
+</head>
+<body>
+<h2>Employee Form</h2>
+<form id="userForm">
+    <label>Username: <input type="text" id="username" required></label><br>
+    <label>Password: <input type="password" id="password" required></label><br>
+
+    <h3>Position</h3>
+    <label>Name: <input type="text" id="positionName" required></label><br>
+    <label>Salary: <input type="number" id="salary" step="0.01" required></label><br>
+
+    <h3>Employee Details</h3>
+    <label>First Name: <input type="text" id="firstName" required></label><br>
+    <label>Last Name: <input type="text" id="lastName" required></label><br>
+    <label>Birth Date: <input type="date" id="birthDate" required></label><br>
+    <label>Specialization: <input type="text" id="specialization" required></label><br>
+
+    <h3>Permissions</h3>
+    <label><input type="checkbox" id="createComplaint" value="CREATE_COMPLAINT"> CREATE_COMPLAINT</label><br>
+
+    <button type="button" onclick="submitForm()">Submit</button>
+</form>
+
+<script>
+    function submitForm() {
+        const data = {
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value,
+            positionDTO: {
+                name: document.getElementById('positionName').value,
+                salary: parseFloat(document.getElementById('salary').value)
+            },
+            employeeDTO: {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                birthDate: document.getElementById('birthDate').value,
+                specialization: document.getElementById('specialization').value
+            },
+            permissions: []
+        };
+
+        if (document.getElementById('createComplaint').checked) {
+            data.permissions.push(document.getElementById('createComplaint').value);
+        }
+
+        console.log(JSON.stringify(data, null, 2));
+    }
+</script>
+</body>
+</html>

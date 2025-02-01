@@ -1,5 +1,6 @@
 package hospital.hospital_system.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import hospital.hospital_system.enums.PermissionEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,10 +26,12 @@ public class Position extends AbsIntegerEntity {
     @Positive
     private Double salary;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "position")
     @ToString.Exclude
     private List<PositionPermission> positionPermissionList;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "position")
     @ToString.Exclude
     private List<User> users;

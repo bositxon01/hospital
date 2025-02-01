@@ -1,6 +1,7 @@
 package hospital.hospital_system.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -27,6 +28,7 @@ public class User extends AbsIntegerEntity implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     private Position position;
 
@@ -40,9 +42,13 @@ public class User extends AbsIntegerEntity implements UserDetails {
                 .toList();
     }
 
+    @JsonIgnore
     @OneToOne(mappedBy = "user")
+    @ToString.Exclude
     private Employee employee;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "user")
+    @ToString.Exclude
     private Patient patient;
 }

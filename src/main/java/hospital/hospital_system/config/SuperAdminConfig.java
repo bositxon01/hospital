@@ -59,21 +59,21 @@ public class SuperAdminConfig {
                 );
 
         User user = new User();
-        if (userRepository.findByUsername("SUPERADMIN").isEmpty()) {
+        if (userRepository.findByUsername("SUPERADMIN@gmail.com").isEmpty()) {
             user.setUsername("SUPERADMIN@gmail.com");
             user.setPassword(passwordEncoder.encode("SUPERPASSWORD"));
             user.setPosition(position);
             userRepository.save(user);
             System.out.println("SUPERADMIN ADDED");
+
+            LocalDate birthDate = LocalDate.of(1990, 1, 1);
+
+            Employee employee = new Employee();
+            employee.setFirstName("SUPERADMIN");
+            employee.setLastName("SUPERADMIN");
+            employee.setDateOfBirth(birthDate);
+            employee.setUser(user);
+            employeeRepository.save(employee);
         }
-
-        Date birthDate = Date.valueOf(LocalDate.of(1990, 1, 1));
-
-        Employee employee = new Employee();
-        employee.setFirstName("SUPERADMIN");
-        employee.setLastName("SUPERADMIN");
-        employee.setDateOfBirth(birthDate);
-        employee.setUser(user);
-        employeeRepository.save(employee);
     }
 }
