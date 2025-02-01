@@ -1,11 +1,14 @@
 package hospital.hospital_system.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import hospital.hospital_system.enums.TurnEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -16,20 +19,19 @@ import java.util.List;
 @Entity
 public class Turn extends AbsIntegerEntity {
 
-    @NotBlank
     @Column(unique = true, nullable = false)
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "TurnEnum cannot be null")
     private TurnEnum name;
 
-    @NotBlank
     @Column(nullable = false)
-    private Time startTime;
+    private LocalTime startTime;
 
-    @NotBlank
     @Column(nullable = false)
-    private Time endTime;
+    private LocalTime endTime;
 
     @OneToMany(mappedBy = "turn")
     @ToString.Exclude
+    @JsonIgnore
     private List<WorkTime> workTimes;
 }
