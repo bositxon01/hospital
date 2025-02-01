@@ -1,5 +1,6 @@
 package hospital.hospital_system.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -19,20 +20,22 @@ public class Employee extends Person {
     @OneToOne
     private Attachment attachment;
 
-
     private String specialization;
 
     @OneToOne
     private User user;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "employee")
     @ToString.Exclude
     private List<Appointment> appointments;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "employee")
     @ToString.Exclude
     private List<WorkTime> workTimes;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "employee")
     @ToString.Exclude
     private List<EmployeeRoom> employeeRooms;
