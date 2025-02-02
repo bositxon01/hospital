@@ -3,6 +3,8 @@ package hospital.hospital_system.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -10,6 +12,8 @@ import lombok.*;
 @Setter
 @ToString
 @Entity
+@SQLRestriction(value = "deleted=false")
+@SQLDelete(sql =( "update complaint set deleted=true where id=?"))
 public class Complaint  extends AbsIntegerEntity{
 
     @NotBlank

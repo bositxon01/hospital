@@ -1,8 +1,6 @@
 package hospital.hospital_system.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
@@ -20,7 +18,7 @@ public class Patient extends Person {
     @OneToOne
     private User user;
 
-    @OneToMany(mappedBy = "patient")
+    @OneToMany(mappedBy = "patient",cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Appointment> appointments;
 
