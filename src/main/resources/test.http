@@ -1,0 +1,14 @@
+###
+POST http://localhost:8080/auth/sign-up
+Content-Type: application/json
+
+{
+  "username": "",
+  "password": "",
+  "positionDTO": {},
+  "employeeDTO": {},
+  "permissions": []
+}
+###
+
+GET http://localhost:8080/position
