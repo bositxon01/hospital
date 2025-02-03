@@ -16,6 +16,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -35,11 +38,12 @@ public class AttachmentServiceImpl implements AttachmentService {
             }
 
             String contentType = multipartFile.getContentType();
+
             long size = multipartFile.getSize();
-            if (size > 10 * 1024 * 1024) {  // 10MB
+            if (size > 100 * 1024 * 1024) {  // 100MB
                 return ApiResult.error("File is too large");
             }
-            if (!contentType.startsWith("image/")) {  // Rasm bo'lishi kerak
+            if (!Objects.requireNonNull(contentType).startsWith("image/")) {  // Rasm bo'lishi kerak
                 return ApiResult.error("Invalid file type");
             }
 
@@ -54,10 +58,12 @@ public class AttachmentServiceImpl implements AttachmentService {
             Path path = Paths.get(baseFolder)
                     .resolve(String.valueOf(year))
                     .resolve(String.valueOf(month))
-                    .resolve(String.valueOf(day))
-                    .resolve(name);
+                    .resolve(String.valueOf(day));
 
-            Files.createDirectories(path.getParent());
+            Files.createDirectories(path);
+
+            path = path.resolve(name);
+
             Files.copy(multipartFile.getInputStream(), path);
 
             Attachment attachment = new Attachment();
@@ -76,28 +82,32 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public ApiResult<AttachmentDTO> getAttachmentById(UUID id) {
-        Attachment attachment = attachmentRepository.findById(id).orElse(null);
-        if (attachment != null) {
-            return ApiResult.success(new AttachmentDTO(attachment));
+    public ApiResult<AttachmentDTO> getAttachmentById(Integer id) {
+        Optional<Attachment> optionalAttachment = attachmentRepository.findAttachmentById(id);
+        if (optionalAttachment.isEmpty()) {
+            return ApiResult.error("Attachment not found with id: " + id);
         }
-        return ApiResult.error("Attachment not found");
+
+        return ApiResult.success(new AttachmentDTO(optionalAttachment.get()));
     }
 
     @Override
-    public ApiResult<String> deleteAttachment(UUID id) {
-        Attachment attachment = attachmentRepository.findById(id).orElse(null);
-        if (attachment != null) {
-            Path path = Paths.get(attachment.getPath());
-            try {
-                Files.deleteIfExists(path);
-            } catch (IOException e) {
-                return ApiResult.error("Error occurred while deleting attachment: " + e.getMessage());
-            }
+    public ApiResult<String> deleteAttachment(Integer id) {
+        Optional<Attachment> optionalAttachment = attachmentRepository.findAttachmentById(id);
 
-            attachmentRepository.delete(attachment);
-            return ApiResult.success("Attachment deleted successfully");
+        if (optionalAttachment.isEmpty()) {
+            return ApiResult.error("Attachment not found with id: " + id);
         }
-        return ApiResult.error("Attachment not found");
+
+        Attachment attachment = optionalAttachment.get();
+        Path path = Paths.get(attachment.getPath());
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            return ApiResult.error("Error occurred while deleting attachment: " + e.getMessage());
+        }
+
+        attachmentRepository.delete(attachment);
+        return ApiResult.success("Attachment deleted successfully");
     }
 }

@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -14,8 +13,8 @@ import java.time.LocalDateTime;
 public class AttachmentDTO implements Serializable {
 
     private Integer id;
-    private LocalDateTime createdAt;
     private String fileName;
+    private String originalFileName;
     private String contentType;
     private Long size;
     private String url;
@@ -23,8 +22,9 @@ public class AttachmentDTO implements Serializable {
     public AttachmentDTO(Attachment attachment) {
         this.id = attachment.getId();
         this.fileName = attachment.getFileName();
+        this.originalFileName = attachment.getOriginalFileName();
         this.contentType = attachment.getContentType();
         this.size = attachment.getSize();
-        this.url = "/api/attachment/download/" + attachment.getId();  // Dinamik URL
+        this.url = "/api/attachment/download/" + attachment.getId();
     }
 }
