@@ -2,6 +2,7 @@ package hospital.hospital_system.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
@@ -39,5 +40,11 @@ public class Employee extends Person {
     @OneToMany(mappedBy = "employee")
     @ToString.Exclude
     private List<EmployeeRoom> employeeRooms;
+
+    @ToString.Exclude
+    @OneToOne(fetch = FetchType.LAZY)
+    private Attachment photo;
+
+
 
 }

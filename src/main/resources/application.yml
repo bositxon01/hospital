@@ -22,5 +22,14 @@ spring:
           auth: true
           starttls:
             enable: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 server:
   address: 0.0.0.0
+
+app:
+  files:
+    baseFolder: files/
+
