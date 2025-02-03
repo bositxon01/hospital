@@ -1,20 +1,14 @@
 package hospital.hospital_system.config;
 
-import hospital.hospital_system.entity.Employee;
-import hospital.hospital_system.entity.Position;
-import hospital.hospital_system.entity.PositionPermission;
-import hospital.hospital_system.entity.User;
+import hospital.hospital_system.entity.*;
 import hospital.hospital_system.enums.PermissionEnum;
-import hospital.hospital_system.repository.EmployeeRepository;
-import hospital.hospital_system.repository.PositionPermissionRepository;
-import hospital.hospital_system.repository.PositionRepository;
-import hospital.hospital_system.repository.UserRepository;
+import hospital.hospital_system.enums.RoomEnum;
+import hospital.hospital_system.repository.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +25,8 @@ public class SuperAdminConfig {
     private final EmployeeRepository employeeRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final RoomRepository roomRepository;
 
     @PostConstruct
     public void init() {
@@ -74,6 +70,15 @@ public class SuperAdminConfig {
             employee.setDateOfBirth(birthDate);
             employee.setUser(user);
             employeeRepository.save(employee);
+            roomInit();
+        }
+    }
+
+    private void roomInit() {
+        for (RoomEnum value : RoomEnum.values()) {
+            Room room = new Room();
+            room.setName(value);
+            roomRepository.save(room);
         }
     }
 }
