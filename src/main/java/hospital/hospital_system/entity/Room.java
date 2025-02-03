@@ -16,7 +16,6 @@ import java.util.List;
 @Entity
 public class Room extends AbsIntegerEntity {
 
-    @NotBlank
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private RoomEnum name;
