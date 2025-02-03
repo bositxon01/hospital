@@ -19,7 +19,7 @@ public class Complaint  extends AbsIntegerEntity{
     @Column(columnDefinition = "text")
     private String description;
 
-    @OneToOne(mappedBy = "complaint")
+    @OneToOne(mappedBy = "complaint", cascade = CascadeType.ALL)
     private Patient patient;
 
 }

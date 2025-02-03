@@ -14,7 +14,5 @@ public interface PatientService {
 
     ApiResult<PatientDTO> create(PatientDTO patientDTO);
 
-    ApiResult<PatientDTO> update(Integer id, PatientDTO patientDTO);
-
     ApiResult<PatientDTO> delete(Integer id);
 }

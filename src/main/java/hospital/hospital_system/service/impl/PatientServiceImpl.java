@@ -1,21 +1,34 @@
 package hospital.hospital_system.service.impl;
 
+import hospital.hospital_system.entity.Complaint;
 import hospital.hospital_system.entity.Patient;
+import hospital.hospital_system.entity.User;
 import hospital.hospital_system.payload.ApiResult;
+import hospital.hospital_system.payload.ComplaintDTO;
 import hospital.hospital_system.payload.PatientDTO;
+import hospital.hospital_system.repository.ComplaintRepository;
 import hospital.hospital_system.repository.PatientRepository;
+import hospital.hospital_system.repository.UserRepository;
 import hospital.hospital_system.service.PatientService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class PatientServiceImpl implements PatientService {
+    private final UserRepository userRepository;
+
+    private final ComplaintRepository complaintRepository;
 
     private final PatientRepository patientRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public ApiResult<List<PatientDTO>> getAllPatients() {
@@ -26,68 +39,92 @@ public class PatientServiceImpl implements PatientService {
         }
 
         List<PatientDTO> patientDTOList = patients.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .map(patient -> {
+                            PatientDTO patientDTO = getPatientDTO(patient);
+                            return patientDTO;
+                        }
+                ).toList();
 
         return ApiResult.success(patientDTOList);
     }
 
     @Override
     public ApiResult<PatientDTO> getPatient(Integer id) {
-        return patientRepository.findById(id)
-                .map(patient -> ApiResult.success(convertToDTO(patient)))
-                .orElse(ApiResult.error("Patient not found"));
+        Optional<Patient> optionalPatient = patientRepository.findById(id);
+
+        if (optionalPatient.isEmpty()) {
+            return ApiResult.error("Patient not found");
+        }
+
+        Patient patient = optionalPatient.get();
+
+        PatientDTO patientDTO = getPatientDTO(patient);
+
+        return ApiResult.success(patientDTO);
     }
 
     @Override
     public ApiResult<PatientDTO> create(PatientDTO patientDTO) {
-        Patient patient = convertToEntity(patientDTO);
-        Patient savedPatient = patientRepository.save(patient);
-        return ApiResult.success(convertToDTO(savedPatient));
+        ComplaintDTO complaintDTO = patientDTO.getComplaintDTO();
+        Complaint complaint = new Complaint();
+        complaint.setName(complaintDTO.getName());
+        complaint.setDescription(complaintDTO.getDescription());
+        complaintRepository.save(complaint);
+
+        Optional<User> optionalUser = userRepository.findByUsername(patientDTO.getUsername());
+        Patient patient = new Patient();
+        User user;
+
+        if (optionalUser.isEmpty()) {
+            user = new User();
+            user.setUsername(patientDTO.getUsername());
+            user.setPassword(passwordEncoder.encode(patientDTO.getPassword()));
+
+            //send email
+            userRepository.save(user);
+
+        } else {
+            user = optionalUser.get();
+            //send email
+        }
+
+        patient.setFirstName(patientDTO.getFirstName());
+        patient.setLastName(patientDTO.getLastName());
+        patient.setDateOfBirth(patientDTO.getDateOfBirth());
+        patient.setComplaint(complaint);
+        patient.setUser(user);
+        patientRepository.save(patient);
+
+        patientDTO.setId(patient.getId());
+
+        return ApiResult.success("Patient created successfully");
     }
 
-    @Override
-    public ApiResult<PatientDTO> update(Integer id, PatientDTO patientDTO) {
-        return patientRepository.findById(id)
-                .map(patient -> {
-                    patient.setFirstName(patientDTO.getFirstName());
-                    patient.setLastName(patientDTO.getLastName());
-                    patient.setDateOfBirth(patientDTO.getDateOfBirth());
-                    Patient updatedPatient = patientRepository.save(patient);
-                    return ApiResult.success(convertToDTO(updatedPatient));
-                })
-                .orElse(ApiResult.error("Patient not found"));
-    }
-
+    @Transactional
     @Override
     public ApiResult<PatientDTO> delete(Integer id) {
-        return patientRepository.findById(id)
-                .map(patient -> {
-                    patientRepository.deleteById(id);
-                    return ApiResult.success(convertToDTO(patient));
+        Optional<Patient> optionalPatient = patientRepository.findById(id);
+        if (optionalPatient.isEmpty()) {
+            return ApiResult.error("Patient not found");
+        }
 
-                })
-                .orElse(ApiResult.error("Patient not found"));
+        patientRepository.deletePatientById(id);
+        return ApiResult.success("Patient deleted successfully");
     }
 
+    private static PatientDTO getPatientDTO(Patient patient) {
+        ComplaintDTO complaintDTO = new ComplaintDTO(patient.getComplaint().getName(),
+                patient.getComplaint().getDescription());
 
-    private PatientDTO convertToDTO(Patient patient) {
-        return new PatientDTO(
+        PatientDTO patientDTO = new PatientDTO(
                 patient.getId(),
                 patient.getFirstName(),
                 patient.getLastName(),
                 patient.getDateOfBirth(),
-                patient.getComplaint() != null ? patient.getComplaint().getId() : null,
-                patient.getUser() != null ? patient.getUser().getId() : null,
-                patient.getAppointments().stream().map(a -> a.getId()).collect(Collectors.toList())
+                patient.getUser().getUsername(),
+                complaintDTO
         );
-    }
 
-    private Patient convertToEntity(PatientDTO patientDTO) {
-        Patient patient = new Patient();
-        patient.setFirstName(patientDTO.getFirstName());
-        patient.setLastName(patientDTO.getLastName());
-        patient.setDateOfBirth(patientDTO.getDateOfBirth());
-        return patient;
+        return patientDTO;
     }
 }
