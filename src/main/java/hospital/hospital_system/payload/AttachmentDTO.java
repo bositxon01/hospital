@@ -17,6 +17,7 @@ public class AttachmentDTO implements Serializable {
     private String originalFileName;
     private String contentType;
     private Long size;
+    private String filePath;
     private String url;
 
     public AttachmentDTO(Attachment attachment) {
@@ -25,6 +26,7 @@ public class AttachmentDTO implements Serializable {
         this.originalFileName = attachment.getOriginalFileName();
         this.contentType = attachment.getContentType();
         this.size = attachment.getSize();
+        this.filePath = attachment.getPath();
         this.url = "/api/attachment/download/" + attachment.getId();
     }
 }
