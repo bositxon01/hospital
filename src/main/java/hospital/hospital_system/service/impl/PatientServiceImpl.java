@@ -39,11 +39,7 @@ public class PatientServiceImpl implements PatientService {
         }
 
         List<PatientDTO> patientDTOList = patients.stream()
-                .map(patient -> {
-                            PatientDTO patientDTO = getPatientDTO(patient);
-                            return patientDTO;
-                        }
-                ).toList();
+                .map(PatientServiceImpl::getPatientDTO).toList();
 
         return ApiResult.success(patientDTOList);
     }
@@ -53,7 +49,7 @@ public class PatientServiceImpl implements PatientService {
         Optional<Patient> optionalPatient = patientRepository.findById(id);
 
         if (optionalPatient.isEmpty()) {
-            return ApiResult.error("Patient not found");
+            return ApiResult.error("Patient not found with id: " + id);
         }
 
         Patient patient = optionalPatient.get();
@@ -105,7 +101,7 @@ public class PatientServiceImpl implements PatientService {
     public ApiResult<PatientDTO> delete(Integer id) {
         Optional<Patient> optionalPatient = patientRepository.findById(id);
         if (optionalPatient.isEmpty()) {
-            return ApiResult.error("Patient not found");
+            return ApiResult.error("Patient not found with id: " + id);
         }
 
         patientRepository.deletePatientById(id);
@@ -113,10 +109,11 @@ public class PatientServiceImpl implements PatientService {
     }
 
     private static PatientDTO getPatientDTO(Patient patient) {
-        ComplaintDTO complaintDTO = new ComplaintDTO(patient.getComplaint().getName(),
+        ComplaintDTO complaintDTO = new ComplaintDTO(
+                patient.getComplaint().getName(),
                 patient.getComplaint().getDescription());
 
-        PatientDTO patientDTO = new PatientDTO(
+        return new PatientDTO(
                 patient.getId(),
                 patient.getFirstName(),
                 patient.getLastName(),
@@ -124,7 +121,5 @@ public class PatientServiceImpl implements PatientService {
                 patient.getUser().getUsername(),
                 complaintDTO
         );
-
-        return patientDTO;
     }
 }
