@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #6e8efb, #a777e3);
+    }
+    .login-container {
+      width: 350px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+    .login-container h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .input-group {
+      margin-bottom: 15px;
+      text-align: left;
+      position: relative;
+    }
+    .input-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    .input-group .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 35px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .btn {
+      width: 100%;
+      background: #6e8efb;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: 0.3s;
+    }
+    .btn:hover {
+      background: #5a7be6;
+    }
+    .message {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    .success {
+      color: green;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-container">
+  <h2>Login</h2>
+  <form id="loginForm">
+    <div class="input-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" required>
+    </div>
+    <div class="input-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" required>
+      <span class="toggle-password" onclick="togglePassword()">👁</span>
+    </div>
+    <button type="submit" class="btn">Login</button>
+  </form>
+  <p id="message" class="message"></p>
+</div>
+
+<script>
+  function togglePassword() {
+    const passwordInput = document.getElementById("password");
+    passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+  }
+
+  document.getElementById("loginForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const messageEl = document.getElementById("message");
+
+    if (!username || !password) {
+      messageEl.textContent = "Iltimos, barcha maydonlarni to‘ldiring!";
+      messageEl.className = "message error";
+      return;
+    }
+
+    const data = { username, password };
+
+    try {
+      const response = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data),
+        credentials: "include"  // COOKIE olish uchun
+      });
+
+      const result = await response.json();
+
+      if (result.success === false) {
+        messageEl.textContent = result.message || "Noma'lum xatolik!";
+        messageEl.className = "message error";
+      } else {
+        messageEl.textContent = "Muvaffaqiyatli login!";
+        messageEl.className = "message success";
+
+        setTimeout(() => {
+          window.location.href = "/hospital/hospital_system/htmls/Home.html";
+        }, 2000);
+      }
+    } catch (error) {
+      messageEl.textContent = "Server bilan bog‘lanib bo‘lmadi!";
+      messageEl.className = "message error";
+    }
+  });
+</script>
+
+</body>
+</html>
