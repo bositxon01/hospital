@@ -1,4 +1,4 @@
-package hospital.hospital_system.service;
+package hospital.hospital_system.service.impl;
 
 import hospital.hospital_system.entity.User;
 import hospital.hospital_system.repository.UserRepository;
@@ -12,11 +12,11 @@ import java.util.Optional;
 
 @Service
 
-public class DBUserDetailsService implements UserDetailsService {
+public class DBUserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    public DBUserDetailsService(UserRepository userRepository) {
+    public DBUserDetailsServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
