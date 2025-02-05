@@ -9,7 +9,6 @@ import hospital.hospital_system.service.TurnService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -92,7 +91,7 @@ public class TurnServiceImpl implements TurnService {
         }
         Turn turn = optionalTurn.get();
         turnRepository.delete(turn);
-        turn.setDeleted(true);
+        turn.setIsDeleted(true);
 
         return ApiResult.success("Turn deleted successfully");
     }

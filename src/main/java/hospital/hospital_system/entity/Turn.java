@@ -3,11 +3,9 @@ package hospital.hospital_system.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import hospital.hospital_system.enums.TurnEnum;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
 
