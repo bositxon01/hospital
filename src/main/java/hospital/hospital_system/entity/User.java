@@ -1,6 +1,5 @@
 package hospital.hospital_system.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -32,7 +31,6 @@ public class User extends AbsIntegerEntity implements UserDetails {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     private Position position;
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

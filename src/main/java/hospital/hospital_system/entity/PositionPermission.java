@@ -1,6 +1,5 @@
 package hospital.hospital_system.entity;
 
-
 import hospital.hospital_system.enums.PermissionEnum;
 import jakarta.persistence.*;
 import lombok.*;

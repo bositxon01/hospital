@@ -2,7 +2,6 @@ package hospital.hospital_system.entity;
 
 import hospital.hospital_system.enums.RoomEnum;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
 

@@ -17,7 +17,7 @@ import java.util.List;
 public class TurnController {
     private final TurnService turnService;
 
-    //@CheckAuth(permissions = PermissionEnum.CREATE_TURN)
+    @CheckAuth(permissions = PermissionEnum.CREATE_TURN)
     @PostMapping("/create")
     public ResponseEntity<?> login(@RequestBody TurnDTO turnDTO) {
         ApiResult<TurnDTO> apiResult = turnService.create(turnDTO);
