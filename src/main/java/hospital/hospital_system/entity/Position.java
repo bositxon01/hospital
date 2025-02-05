@@ -26,7 +26,7 @@ public class Position extends AbsIntegerEntity {
     private Double salary;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "position")
+    @OneToMany(mappedBy = "position", cascade = CascadeType.REMOVE)
     @ToString.Exclude
     private List<PositionPermission> positionPermissionList;
 
