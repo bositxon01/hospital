@@ -57,8 +57,9 @@ public class TurnServiceImpl implements TurnService {
     @Override
     public ApiResult<TurnDTO> getById(int id) {
         Optional<Turn> optionalTurn = turnRepository.findById(id);
+
         if (optionalTurn.isEmpty()) {
-            return ApiResult.success("Turn not found with id " + id);
+            return ApiResult.error("Turn not found with id " + id);
         }
 
         Turn turn = optionalTurn.get();
@@ -91,7 +92,6 @@ public class TurnServiceImpl implements TurnService {
         }
         Turn turn = optionalTurn.get();
         turnRepository.delete(turn);
-        turn.setIsDeleted(true);
 
         return ApiResult.success("Turn deleted successfully");
     }

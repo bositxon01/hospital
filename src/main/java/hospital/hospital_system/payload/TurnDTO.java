@@ -11,7 +11,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Data
 public class TurnDTO {
-    private int id;
+    private Integer id;
     private TurnEnum name;
     private LocalTime startTime;
     private LocalTime endTime;
