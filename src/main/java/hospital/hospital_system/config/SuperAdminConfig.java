@@ -68,6 +68,7 @@ public class SuperAdminConfig {
             employee.setFirstName("SUPERADMIN");
             employee.setLastName("SUPERADMIN");
             employee.setDateOfBirth(birthDate);
+            employee.setSpecialization("SUPERADMIN");
             employee.setUser(user);
             employeeRepository.save(employee);
             roomInit();

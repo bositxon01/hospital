@@ -10,6 +10,14 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Data
 public class EmployeeDTO {
+    public EmployeeDTO(String firstName, String lastName, LocalDate birthDate, String specialization) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthDate = birthDate;
+        this.specialization = specialization;
+    }
+
+    private Integer id;
     private String firstName;
     private String lastName;
     private LocalDate birthDate;

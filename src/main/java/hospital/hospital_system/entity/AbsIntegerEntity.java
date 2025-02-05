@@ -25,5 +25,5 @@ public class AbsIntegerEntity {
     @UpdateTimestamp
     private LocalDateTime updated_at;
 
-    private boolean deleted;
+    private boolean isDeleted;
 }
