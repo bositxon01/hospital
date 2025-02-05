@@ -1,8 +1,6 @@
 package hospital.hospital_system.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
@@ -15,9 +13,11 @@ import java.util.List;
 @Entity
 public class Patient extends Person {
     @OneToOne
+    @ToString.Exclude
     private Complaint complaint;
 
-    @OneToOne
+    @ManyToOne
+    @ToString.Exclude
     private User user;
 
     @OneToMany(mappedBy = "patient")

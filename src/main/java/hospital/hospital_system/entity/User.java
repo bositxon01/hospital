@@ -1,6 +1,5 @@
 package hospital.hospital_system.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -11,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,7 +32,6 @@ public class User extends AbsIntegerEntity implements UserDetails {
     @ManyToOne(fetch = FetchType.EAGER)
     private Position position;
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return position.getPositionPermissionList()
@@ -48,7 +47,7 @@ public class User extends AbsIntegerEntity implements UserDetails {
     private Employee employee;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
-    private Patient patient;
+    private List<Patient> patients;
 }

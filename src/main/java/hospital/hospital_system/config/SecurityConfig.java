@@ -1,6 +1,6 @@
 package hospital.hospital_system.config;
 
-import hospital.hospital_system.service.DBUserDetailsService;
+import hospital.hospital_system.service.impl.DBUserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,13 +19,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final DBUserDetailsService dbUserDetailsService;
+    private final DBUserDetailsServiceImpl dbUserDetailsServiceImpl;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
 
-        http.userDetailsService(dbUserDetailsService);
+        http.userDetailsService(dbUserDetailsServiceImpl);
 
         http.authorizeHttpRequests(conf -> conf
                 .requestMatchers(

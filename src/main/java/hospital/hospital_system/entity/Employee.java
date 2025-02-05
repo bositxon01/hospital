@@ -21,6 +21,7 @@ public class Employee extends Person {
     @OneToOne
     private Attachment attachment;
 
+    @NotBlank(message = "Specialization cannot be blank")
     private String specialization;
 
     @OneToOne
@@ -44,7 +45,5 @@ public class Employee extends Person {
     @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)
     private Attachment photo;
-
-
 
 }

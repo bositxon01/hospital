@@ -9,7 +9,6 @@ import hospital.hospital_system.service.TurnService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -58,8 +57,9 @@ public class TurnServiceImpl implements TurnService {
     @Override
     public ApiResult<TurnDTO> getById(int id) {
         Optional<Turn> optionalTurn = turnRepository.findById(id);
+
         if (optionalTurn.isEmpty()) {
-            return ApiResult.success("Turn not found with id " + id);
+            return ApiResult.error("Turn not found with id " + id);
         }
 
         Turn turn = optionalTurn.get();
@@ -92,7 +92,6 @@ public class TurnServiceImpl implements TurnService {
         }
         Turn turn = optionalTurn.get();
         turnRepository.delete(turn);
-        turn.setDeleted(true);
 
         return ApiResult.success("Turn deleted successfully");
     }
