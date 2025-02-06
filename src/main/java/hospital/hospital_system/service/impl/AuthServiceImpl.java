@@ -23,7 +23,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public ApiResult<LoginDTO> login(LoginDTO loginDTO, HttpServletRequest request) {
+    public ApiResult<String> login(LoginDTO loginDTO, HttpServletRequest request) {
         String username = loginDTO.getUsername();
         String password = loginDTO.getPassword();
 

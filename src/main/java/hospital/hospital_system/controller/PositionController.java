@@ -18,35 +18,35 @@ public class PositionController {
     public final PositionService positionService;
 
 
-//    @CheckAuth(permissions = PermissionEnum.VIEW_POSITION)
+    @CheckAuth(permissions = PermissionEnum.VIEW_POSITION)
     @GetMapping
     public ResponseEntity<ApiResult<List<PositionDTO>>> getAllPositions() {
         ApiResult<List<PositionDTO>> allPositions = positionService.getAllPositions();
         return ResponseEntity.ok(allPositions);
     }
 
-//    @CheckAuth(permissions = PermissionEnum.VIEW_POSITION)
+    @CheckAuth(permissions = PermissionEnum.VIEW_POSITION)
     @GetMapping("/{id}")
     public ResponseEntity<ApiResult<PositionDTO>> getPosition(@PathVariable Integer id) {
         ApiResult<PositionDTO> positionDto = positionService.getPosition(id);
         return ResponseEntity.ok(positionDto);
     }
 
-//    @CheckAuth(permissions = PermissionEnum.CREATE_POSITION)
+    @CheckAuth(permissions = PermissionEnum.CREATE_POSITION)
     @PostMapping("/create")
     public ResponseEntity<ApiResult<PositionDTO>> createPosition(@RequestBody PositionDTO positionDTO) {
         ApiResult<PositionDTO> positionDTOApiResult = positionService.create(positionDTO);
         return ResponseEntity.ok(positionDTOApiResult);
     }
 
-//    @CheckAuth(permissions = PermissionEnum.EDIT_POSITION)
+    @CheckAuth(permissions = PermissionEnum.EDIT_POSITION)
     @PutMapping("/{id}")
     public ResponseEntity<ApiResult<PositionDTO>> updatePosition(@PathVariable Integer id, @RequestBody PositionDTO positionDTO) {
         ApiResult<PositionDTO> update = positionService.update(id, positionDTO);
         return ResponseEntity.ok(update);
     }
 
-//    @CheckAuth(permissions = PermissionEnum.DELETE_POSITION)
+    @CheckAuth(permissions = PermissionEnum.DELETE_POSITION)
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResult<PositionDTO>> deletePosition(@PathVariable Integer id) {
         ApiResult<PositionDTO> delete = positionService.delete(id);

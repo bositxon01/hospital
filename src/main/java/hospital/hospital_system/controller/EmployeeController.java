@@ -1,8 +1,5 @@
 package hospital.hospital_system.controller;
 
-
-import hospital.hospital_system.aop.CheckAuth;
-import hospital.hospital_system.enums.PermissionEnum;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.EmployeeAndUserDTO;
 import hospital.hospital_system.payload.EmployeeGetDTO;

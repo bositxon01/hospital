@@ -5,10 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,12 +16,13 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
-@Transactional
-
-@SQLRestriction(value = "deleted=false")
-@SQLDelete(sql = ("update employee set deleted=true where id=?"))
 public class Employee extends Person {
 
+    @ToString.Exclude
+    @OneToOne(fetch = FetchType.LAZY)
+    private Attachment attachment;
+
+    @NotBlank(message = "Specialization cannot be blank")
     private String specialization;
 
     @OneToOne
@@ -43,10 +42,5 @@ public class Employee extends Person {
     @OneToMany(mappedBy = "employee")
     @ToString.Exclude
     private List<EmployeeRoom> employeeRooms;
-
-    @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY)
-    private Attachment attachment;
-
 
 }
