@@ -60,42 +60,4 @@ public class AuthServiceImpl implements AuthService {
 
         return ApiResult.success("Login successful");
     }
-
-    @Override
-    public ApiResult<String> signUp(SignUpDTO signUpDTO) {
-        PositionDTO positionDTO = signUpDTO.getPositionDTO();
-        Optional<Position> positionByName = positionRepository.findPositionByName(positionDTO.getName());
-
-        Position position = positionByName.orElseGet(() -> {
-            Position newPosition = new Position();
-            newPosition.setName(positionDTO.getName());
-            newPosition.setSalary(positionDTO.getSalary());
-            return positionRepository.save(newPosition);
-        });
-
-        List<PermissionEnum> permissions = signUpDTO.getPermissions();
-
-        for (PermissionEnum permission : permissions) {
-            PositionPermission positionPermission = new PositionPermission(position, permission);
-            positionPermissionRepository.save(positionPermission);
-        }
-
-        User user = new User();
-        user.setUsername(signUpDTO.getUsername());
-        user.setPassword(passwordEncoder.encode(signUpDTO.getPassword()));
-        user.setPosition(position);
-        userRepository.save(user);
-
-        EmployeeDTO employeeDTO = signUpDTO.getEmployeeDTO();
-        Employee employee = new Employee();
-        employee.setFirstName(employeeDTO.getFirstName());
-        employee.setLastName(employeeDTO.getLastName());
-        employee.setDateOfBirth(employeeDTO.getBirthDate());
-        employee.setSpecialization(employeeDTO.getSpecialization());
-        employee.setUser(user);
-
-        employeeRepository.save(employee);
-
-        return ApiResult.success("Sign up successful");
-    }
 }
