@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,12 +21,16 @@ import java.util.List;
 @Setter
 @ToString
 @Entity(name = "users")
-public class User extends AbsIntegerEntity implements UserDetails {
+
+@SQLRestriction(value = "deleted=false")
+@SQLDelete(sql =( "update users set deleted=true where id=?"))
+public class  User extends AbsIntegerEntity implements UserDetails {
     @NotBlank
     @Email
     @Column(unique = true, nullable = false)
     private String username;
 
+    @JsonIgnore
     @NotBlank
     @Column(nullable = false)
     private String password;

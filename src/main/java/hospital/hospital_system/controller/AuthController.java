@@ -1,10 +1,7 @@
 package hospital.hospital_system.controller;
 
-import hospital.hospital_system.aop.CheckAuth;
-import hospital.hospital_system.enums.PermissionEnum;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.LoginDTO;
-import hospital.hospital_system.payload.SignUpDTO;
 import hospital.hospital_system.repository.UserRepository;
 import hospital.hospital_system.service.AuthService;
 import hospital.hospital_system.service.EmailService;
@@ -35,12 +32,4 @@ public class AuthController {
         ApiResult<LoginDTO> apiResult = authService.login(loginDTO, request);
         return ResponseEntity.ok(apiResult);
     }
-
-    @PostMapping("/sign-up")
-    @CheckAuth(permissions = PermissionEnum.CREATE_EMPLOYEE)
-    public ResponseEntity<?> signUp(@RequestBody SignUpDTO signUpDTO) {
-        ApiResult<SignUpDTO> apiResult = authService.signUp(signUpDTO);
-        return ResponseEntity.ok(apiResult);
-    }
-
 }

@@ -7,14 +7,14 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
 @ToString
+
+
 public class Attachment extends AbsIntegerEntity {
 
     @NotBlank(message = "FileName cannot be blank")

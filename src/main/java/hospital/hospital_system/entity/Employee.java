@@ -5,8 +5,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,10 +18,11 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
-public class Employee extends Person {
+@Transactional
 
-    @OneToOne
-    private Attachment attachment;
+@SQLRestriction(value = "deleted=false")
+@SQLDelete(sql = ("update employee set deleted=true where id=?"))
+public class Employee extends Person {
 
     private String specialization;
 
@@ -43,8 +46,7 @@ public class Employee extends Person {
 
     @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)
-    private Attachment photo;
-
+    private Attachment attachment;
 
 
 }

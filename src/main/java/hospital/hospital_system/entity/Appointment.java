@@ -5,7 +5,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -16,6 +15,7 @@ import java.sql.Timestamp;
 @Setter
 @ToString
 @Entity
+
 public class Appointment extends AbsIntegerEntity {
 
     @ManyToOne
