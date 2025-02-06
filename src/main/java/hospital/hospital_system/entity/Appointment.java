@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 @Setter
 @ToString
 @Entity
+
 public class Appointment extends AbsIntegerEntity {
 
     @ManyToOne
