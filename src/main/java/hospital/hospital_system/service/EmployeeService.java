@@ -3,6 +3,7 @@ package hospital.hospital_system.service;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.EmployeeAndUserDTO;
 import hospital.hospital_system.payload.EmployeeGetDTO;
+import hospital.hospital_system.payload.EmployeeUpdateDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public interface EmployeeService {
 
     ApiResult<EmployeeAndUserDTO> createEmployee(EmployeeAndUserDTO employeeDTO);
 
-    ApiResult<EmployeeAndUserDTO> updateEmployee(Integer id, EmployeeAndUserDTO employeeDTO);
+    ApiResult<EmployeeAndUserDTO> updateEmployee(Integer id, EmployeeUpdateDto employeeUpdateDto);
 
     ApiResult<EmployeeAndUserDTO> deleteEmployee(Integer id);
 

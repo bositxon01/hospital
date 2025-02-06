@@ -15,4 +15,7 @@ public interface PositionRepository extends JpaRepository<Position, Integer> {
     @Modifying
     @Query("DELETE FROM Position p WHERE p.id = :id")
     void deleteById(@Param("id") Integer id);
+
+
+    Optional<Position> findPositionById(Integer id);
 }

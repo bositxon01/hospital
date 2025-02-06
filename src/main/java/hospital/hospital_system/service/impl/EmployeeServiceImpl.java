@@ -7,6 +7,7 @@ import hospital.hospital_system.entity.User;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.EmployeeAndUserDTO;
 import hospital.hospital_system.payload.EmployeeGetDTO;
+import hospital.hospital_system.payload.EmployeeUpdateDto;
 import hospital.hospital_system.repository.AttachmentRepository;
 import hospital.hospital_system.repository.EmployeeRepository;
 import hospital.hospital_system.repository.PositionRepository;
@@ -135,10 +136,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public ApiResult<EmployeeAndUserDTO> updateEmployee(Integer id, EmployeeAndUserDTO employeeDTO) {
+    public ApiResult<EmployeeAndUserDTO> updateEmployee(Integer id, EmployeeUpdateDto employeeDTO) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
-        if (optionalEmployee.isEmpty()) {
-            return ApiResult.error("Employee not found with id: " + id);
+        Optional<Position> positionById = positionRepository.findPositionById(employeeDTO.getPositionId());
+        if (optionalEmployee.isEmpty() || positionById.isEmpty()) {
+            return ApiResult.error("Employee or Position not found with id: " + id + " " + employeeDTO.getPositionId());
         }
 
         Employee employee = optionalEmployee.get();
@@ -147,6 +149,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setLastName(employeeDTO.getLastName());
         employee.setDateOfBirth(employeeDTO.getBirthDate());
         employee.setSpecialization(employeeDTO.getSpecialization());
+        User user = employee.getUser();
+        user.setPosition(positionById.get());
 
         employeeRepository.save(employee);
         return ApiResult.success("Employee updated successfully");
