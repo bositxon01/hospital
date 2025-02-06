@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -63,8 +64,12 @@ public class PatientServiceImpl implements PatientService {
     public ApiResult<PatientDTO> create(PatientDTO patientDTO) {
         ComplaintDTO complaintDTO = patientDTO.getComplaintDTO();
         Complaint complaint = new Complaint();
+
         complaint.setName(complaintDTO.getName());
-        complaint.setDescription(complaintDTO.getDescription());
+
+        if (Objects.nonNull(complaintDTO.getDescription())) {
+            complaint.setDescription(complaintDTO.getDescription());
+        }
         complaintRepository.save(complaint);
 
         Optional<User> optionalUser = userRepository.findByUsername(patientDTO.getUsername());
