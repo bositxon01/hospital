@@ -1,14 +1,8 @@
 package hospital.hospital_system.service.impl;
 
-import hospital.hospital_system.entity.Employee;
-import hospital.hospital_system.entity.Position;
-import hospital.hospital_system.entity.PositionPermission;
 import hospital.hospital_system.entity.User;
-import hospital.hospital_system.enums.PermissionEnum;
-import hospital.hospital_system.payload.*;
-import hospital.hospital_system.repository.EmployeeRepository;
-import hospital.hospital_system.repository.PositionPermissionRepository;
-import hospital.hospital_system.repository.PositionRepository;
+import hospital.hospital_system.payload.ApiResult;
+import hospital.hospital_system.payload.LoginDTO;
 import hospital.hospital_system.repository.UserRepository;
 import hospital.hospital_system.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,16 +14,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
-    private final PositionRepository positionRepository;
-    private final PositionPermissionRepository positionPermissionRepository;
-    private final EmployeeRepository employeeRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
