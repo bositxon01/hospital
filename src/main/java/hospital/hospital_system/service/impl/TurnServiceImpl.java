@@ -19,7 +19,7 @@ public class TurnServiceImpl implements TurnService {
     private final TurnRepository turnRepository;
 
     @Override
-    public ApiResult<TurnDTO> create(TurnDTO turnDTO) {
+    public ApiResult<String> create(TurnDTO turnDTO) {
         TurnEnum name = turnDTO.getName();
         LocalTime startTime = turnDTO.getStartTime();
         LocalTime endTime = turnDTO.getEndTime();
@@ -69,7 +69,7 @@ public class TurnServiceImpl implements TurnService {
     }
 
     @Override
-    public ApiResult<TurnDTO> update(Integer id, TurnDTO turnDTO) {
+    public ApiResult<String> update(Integer id, TurnDTO turnDTO) {
         Optional<Turn> optionalTurn = turnRepository.findById(id);
         if (optionalTurn.isEmpty()) {
             return ApiResult.error("Turn not found with id " + id);
@@ -85,7 +85,7 @@ public class TurnServiceImpl implements TurnService {
     }
 
     @Override
-    public ApiResult<TurnDTO> delete(int id) {
+    public ApiResult<String> delete(int id) {
         Optional<Turn> optionalTurn = turnRepository.findById(id);
         if (optionalTurn.isEmpty()) {
             return ApiResult.error("Turn not found with id " + id);

@@ -6,6 +6,7 @@ import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.PatientDTO;
 import hospital.hospital_system.payload.PositionDTO;
 import hospital.hospital_system.service.PatientService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,10 +33,9 @@ public class PatientController {
         return ResponseEntity.ok(patientDTO);
     }
 
-
     //@CheckAuth(permissions = PermissionEnum.CREATE_PATIENT)
     @PostMapping("/create")
-    public ResponseEntity<ApiResult<PatientDTO>> createPatient(@RequestBody PatientDTO patientDTO) {
+    public ResponseEntity<ApiResult<PatientDTO>> createPatient(@Valid @RequestBody PatientDTO patientDTO) {
         ApiResult<PatientDTO> patientDTOApiResult = patientService.create(patientDTO);
         return ResponseEntity.ok(patientDTOApiResult);
     }
@@ -46,5 +46,4 @@ public class PatientController {
         ApiResult<PatientDTO> patientDTOApiResult = patientService.delete(id);
         return ResponseEntity.ok(patientDTOApiResult);
     }
-
 }
