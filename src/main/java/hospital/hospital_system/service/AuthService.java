@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface AuthService {
-    ApiResult<LoginDTO> login(LoginDTO loginDTO, HttpServletRequest request);
+    ApiResult<String> login(LoginDTO loginDTO, HttpServletRequest request);
 
-    ApiResult<SignUpDTO> signUp(SignUpDTO signUpDTO);
+    ApiResult<String> signUp(SignUpDTO signUpDTO);
 }

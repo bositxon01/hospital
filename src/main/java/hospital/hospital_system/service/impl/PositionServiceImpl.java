@@ -120,6 +120,4 @@ public class PositionServiceImpl implements PositionService {
             return ApiResult.error(e.getMessage());
         }
     }
-
-
 }

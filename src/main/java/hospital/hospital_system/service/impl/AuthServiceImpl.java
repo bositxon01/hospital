@@ -33,12 +33,11 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public ApiResult<LoginDTO> login(LoginDTO loginDTO, HttpServletRequest request) {
+    public ApiResult<String> login(LoginDTO loginDTO, HttpServletRequest request) {
         String username = loginDTO.getUsername();
         String password = loginDTO.getPassword();
 
         Optional<User> optionalUser = userRepository.findByUsername(username);
-
 
         if (optionalUser.isEmpty()) {
             return ApiResult.error("User not found with username: " + username);
@@ -63,46 +62,38 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ApiResult<SignUpDTO> signUp(SignUpDTO signUpDTO) {
+    public ApiResult<String> signUp(SignUpDTO signUpDTO) {
         PositionDTO positionDTO = signUpDTO.getPositionDTO();
-        Position position = new Position();
-        position.setName(positionDTO.getName());
-        position.setSalary(positionDTO.getSalary());
+        Optional<Position> positionByName = positionRepository.findPositionByName(positionDTO.getName());
 
-        String positonName = positionDTO.getName();
-        Optional<Position> positionByName = positionRepository.findPositionByName(positonName);
+        Position position = positionByName.orElseGet(() -> {
+            Position newPosition = new Position();
+            newPosition.setName(positionDTO.getName());
+            newPosition.setSalary(positionDTO.getSalary());
+            return positionRepository.save(newPosition);
+        });
+
+        List<PermissionEnum> permissions = signUpDTO.getPermissions();
+
+        for (PermissionEnum permission : permissions) {
+            PositionPermission positionPermission = new PositionPermission(position, permission);
+            positionPermissionRepository.save(positionPermission);
+        }
 
         User user = new User();
-        if (positionByName.isEmpty()) {
-            positionRepository.save(position);
-            List<PermissionEnum> permissions = signUpDTO.getPermissions();
-
-
-            for (PermissionEnum permission : permissions) {
-                PositionPermission positionPermission = new PositionPermission();
-                positionPermission.setPosition(position);
-                positionPermission.setPermission(permission);
-                positionPermissionRepository.save(positionPermission);
-            }
-
-            user.setUsername(signUpDTO.getUsername());
-            user.setPassword(passwordEncoder.encode(signUpDTO.getPassword()));
-            user.setPosition(position);
-            userRepository.save(user);
-        } else {
-            user.setUsername(signUpDTO.getUsername());
-            user.setPassword(passwordEncoder.encode(signUpDTO.getPassword()));
-            user.setPosition(positionByName.get());
-            userRepository.save(user);
-        }
+        user.setUsername(signUpDTO.getUsername());
+        user.setPassword(passwordEncoder.encode(signUpDTO.getPassword()));
+        user.setPosition(position);
+        userRepository.save(user);
 
         EmployeeDTO employeeDTO = signUpDTO.getEmployeeDTO();
         Employee employee = new Employee();
         employee.setFirstName(employeeDTO.getFirstName());
         employee.setLastName(employeeDTO.getLastName());
-        employee.setSpecialization(employeeDTO.getSpecialization());
         employee.setDateOfBirth(employeeDTO.getBirthDate());
+        employee.setSpecialization(employeeDTO.getSpecialization());
         employee.setUser(user);
+
         employeeRepository.save(employee);
 
         return ApiResult.success("Sign up successful");
