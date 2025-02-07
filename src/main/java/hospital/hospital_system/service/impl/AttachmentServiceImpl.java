@@ -104,7 +104,7 @@ public class AttachmentServiceImpl implements AttachmentService {
             return ResponseEntity.notFound().build();
         }
 
-        // HTTP Header'larni sozlash
+        // HTTP Headerlarni sozlash
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType(contentType));
         headers.setContentLength(size);
@@ -114,7 +114,6 @@ public class AttachmentServiceImpl implements AttachmentService {
                 .headers(headers)
                 .body(resource);
     }
-
 
     @Override
     public ApiResult<String> delete(Integer id) {
