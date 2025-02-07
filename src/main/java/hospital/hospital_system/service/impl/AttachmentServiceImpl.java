@@ -7,6 +7,11 @@ import hospital.hospital_system.repository.AttachmentRepository;
 import hospital.hospital_system.service.AttachmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +21,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -82,14 +86,35 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public ApiResult<AttachmentDTO> getAttachmentById(Integer id) {
+    public ResponseEntity<Resource> getAttachmentById(Integer id) {
         Optional<Attachment> optionalAttachment = attachmentRepository.findAttachmentById(id);
+
         if (optionalAttachment.isEmpty()) {
-            return ApiResult.error("Attachment not found with id: " + id);
+            return ResponseEntity.notFound().build();
         }
 
-        return ApiResult.success(new AttachmentDTO(optionalAttachment.get()));
+        Attachment attachment = optionalAttachment.get();
+        String path = attachment.getPath();
+        String contentType = attachment.getContentType();
+        long size = attachment.getSize();
+
+        // Faylni yuklash
+        Resource resource = new FileSystemResource(path);
+        if (!resource.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // HTTP Header'larni sozlash
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(contentType));
+        headers.setContentLength(size);
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + attachment.getOriginalFileName() + "\"");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(resource);
     }
+
 
     @Override
     public ApiResult<String> deleteAttachment(Integer id) {

@@ -4,6 +4,7 @@ import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.AttachmentDTO;
 import hospital.hospital_system.service.AttachmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,11 +26,11 @@ public class AttachmentController {
     }
 
     // Attachmentni ID orqali olish
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResult<AttachmentDTO>> getAttachment(@PathVariable Integer id) {
-        ApiResult<AttachmentDTO> result = attachmentService.getAttachmentById(id);
-        return ResponseEntity.ok(result);
+    @GetMapping("/download/{id}")
+    public ResponseEntity<Resource> getAttachment(@PathVariable Integer id) {
+        return attachmentService.getAttachmentById(id);
     }
+
 
     // Attachmentni o'chirish
     @DeleteMapping("/{id}")
