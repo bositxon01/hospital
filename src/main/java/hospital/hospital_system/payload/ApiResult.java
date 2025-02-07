@@ -26,4 +26,8 @@ public class ApiResult<T> {
         return new ApiResult<>(false, message, null);
     }
 
+    public static <T> ApiResult<T> error(String message, T data) {
+        return new ApiResult<>(false, message, data);
+    }
+
 }

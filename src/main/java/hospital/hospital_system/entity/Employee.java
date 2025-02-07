@@ -18,9 +18,11 @@ import java.util.List;
 @Entity
 public class Employee extends Person {
 
-    @OneToOne
+    @ToString.Exclude
+    @OneToOne(fetch = FetchType.LAZY)
     private Attachment attachment;
 
+    @NotBlank(message = "Specialization cannot be blank")
     private String specialization;
 
     @OneToOne
@@ -40,11 +42,5 @@ public class Employee extends Person {
     @OneToMany(mappedBy = "employee")
     @ToString.Exclude
     private List<EmployeeRoom> employeeRooms;
-
-    @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY)
-    private Attachment photo;
-
-
 
 }

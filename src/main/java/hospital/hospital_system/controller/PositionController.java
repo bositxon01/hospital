@@ -17,7 +17,6 @@ import java.util.List;
 public class PositionController {
     public final PositionService positionService;
 
-
     @CheckAuth(permissions = PermissionEnum.VIEW_POSITION)
     @GetMapping
     public ResponseEntity<ApiResult<List<PositionDTO>>> getAllPositions() {
