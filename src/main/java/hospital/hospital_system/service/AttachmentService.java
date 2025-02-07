@@ -10,7 +10,7 @@ public interface AttachmentService {
 
     ApiResult<AttachmentDTO> upload(MultipartFile multipartFile);
 
-    ResponseEntity<Resource> getAttachmentById(Integer id);
+    ResponseEntity<Resource> downloadById(Integer id);
 
-    ApiResult<String> deleteAttachment(Integer id);
+    ApiResult<String> delete(Integer id);
 }

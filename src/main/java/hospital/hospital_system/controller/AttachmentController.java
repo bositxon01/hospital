@@ -1,5 +1,7 @@
 package hospital.hospital_system.controller;
 
+import hospital.hospital_system.aop.CheckAuth;
+import hospital.hospital_system.enums.PermissionEnum;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.AttachmentDTO;
 import hospital.hospital_system.service.AttachmentService;
@@ -9,33 +11,30 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.UUID;
-
 @RestController
-@RequestMapping("/api/attachment")
+@RequestMapping("/attachment")
 @RequiredArgsConstructor
 public class AttachmentController {
 
     private final AttachmentService attachmentService;
 
-    // Fayl yuklash
+    @CheckAuth(permissions = PermissionEnum.CREATE_ATTACHMENT)
     @PostMapping("/upload")
     public ResponseEntity<ApiResult<AttachmentDTO>> upload(@RequestParam("file") MultipartFile file) {
         ApiResult<AttachmentDTO> result = attachmentService.upload(file);
         return ResponseEntity.ok(result);
     }
 
-    // Attachmentni ID orqali olish
+    @CheckAuth(permissions = PermissionEnum.VIEW_ATTACHMENT)
     @GetMapping("/download/{id}")
-    public ResponseEntity<Resource> getAttachment(@PathVariable Integer id) {
-        return attachmentService.getAttachmentById(id);
+    public ResponseEntity<Resource> download(@PathVariable Integer id) {
+        return attachmentService.downloadById(id);
     }
 
-
-    // Attachmentni o'chirish
+    @CheckAuth(permissions = PermissionEnum.DELETE_ATTACHMENT)
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResult<String>> deleteAttachment(@PathVariable Integer id) {
-        ApiResult<String> result = attachmentService.deleteAttachment(id);
+    public ResponseEntity<ApiResult<String>> delete(@PathVariable Integer id) {
+        ApiResult<String> result = attachmentService.delete(id);
         return ResponseEntity.ok(result);
     }
 }

@@ -86,7 +86,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public ResponseEntity<Resource> getAttachmentById(Integer id) {
+    public ResponseEntity<Resource> downloadById(Integer id) {
         Optional<Attachment> optionalAttachment = attachmentRepository.findAttachmentById(id);
 
         if (optionalAttachment.isEmpty()) {
@@ -117,7 +117,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 
 
     @Override
-    public ApiResult<String> deleteAttachment(Integer id) {
+    public ApiResult<String> delete(Integer id) {
         Optional<Attachment> optionalAttachment = attachmentRepository.findAttachmentById(id);
 
         if (optionalAttachment.isEmpty()) {
