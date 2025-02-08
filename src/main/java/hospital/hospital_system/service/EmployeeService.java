@@ -1,9 +1,6 @@
 package hospital.hospital_system.service;
 
-import hospital.hospital_system.payload.ApiResult;
-import hospital.hospital_system.payload.EmployeeAndUserDTO;
-import hospital.hospital_system.payload.EmployeeGetDTO;
-import hospital.hospital_system.payload.EmployeeUpdateDto;
+import hospital.hospital_system.payload.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,4 +23,6 @@ public interface EmployeeService {
     ApiResult<List<EmployeeGetDTO>> searchSpecialization(String specialization);
 
     ApiResult<?> verify(String email, String code);
+
+    ApiResult<String> updateEmployeeAttachment(EmployeeAttachmentDto attachmentDto);
 }

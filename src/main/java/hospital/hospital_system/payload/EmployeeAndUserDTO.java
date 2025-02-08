@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Data
 public class EmployeeAndUserDTO {
-    private Integer id;
 
     @NotBlank(message = "First name cannot be blank")
     private String firstName;

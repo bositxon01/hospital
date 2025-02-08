@@ -2,10 +2,7 @@ package hospital.hospital_system.controller;
 
 import hospital.hospital_system.aop.CheckAuth;
 import hospital.hospital_system.enums.PermissionEnum;
-import hospital.hospital_system.payload.ApiResult;
-import hospital.hospital_system.payload.EmployeeAndUserDTO;
-import hospital.hospital_system.payload.EmployeeGetDTO;
-import hospital.hospital_system.payload.EmployeeUpdateDto;
+import hospital.hospital_system.payload.*;
 import hospital.hospital_system.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -77,6 +74,12 @@ public class EmployeeController {
                                     @RequestBody EmployeeUpdateDto employeeDTO) {
         ApiResult<EmployeeAndUserDTO> updateEmployee = employeeService.updateEmployee(id, employeeDTO);
         return ResponseEntity.ok(updateEmployee);
+    }
+
+    @PutMapping("/attachment")
+    public ResponseEntity<?> updateAttachment(@RequestBody EmployeeAttachmentDto attachmentDto) {
+        ApiResult<String> apiResult = employeeService.updateEmployeeAttachment(attachmentDto);
+        return ResponseEntity.ok(apiResult);
     }
 
     @CheckAuth(permissions = PermissionEnum.DELETE_EMPLOYEE)
