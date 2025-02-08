@@ -4,10 +4,7 @@ import hospital.hospital_system.entity.Attachment;
 import hospital.hospital_system.entity.Employee;
 import hospital.hospital_system.entity.Position;
 import hospital.hospital_system.entity.User;
-import hospital.hospital_system.payload.ApiResult;
-import hospital.hospital_system.payload.EmployeeAndUserDTO;
-import hospital.hospital_system.payload.EmployeeGetDTO;
-import hospital.hospital_system.payload.EmployeeUpdateDto;
+import hospital.hospital_system.payload.*;
 import hospital.hospital_system.repository.AttachmentRepository;
 import hospital.hospital_system.repository.EmployeeRepository;
 import hospital.hospital_system.repository.PositionRepository;
@@ -50,7 +47,10 @@ public class EmployeeServiceImpl implements EmployeeService {
             return ApiResult.success("Employees not found");
         }
 
-        return getListApiResult(employees);
+        List<EmployeeGetDTO> list = employees.stream()
+                .map(this::getEmployeeGetDTO
+                ).toList();
+        return ApiResult.success(list);
     }
 
 
@@ -63,18 +63,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee employee = optionalEmployee.get();
 
-        EmployeeGetDTO employeeGetDTO = new EmployeeGetDTO(
-                employee.getId(),
-                employee.getFirstName(),
-                employee.getLastName(),
-                employee.getDateOfBirth(),
-                employee.getSpecialization(),
-                employee.getAttachment().getId(),
-                employee.getUser().getPosition().getName(),
-                employee.getUser().getPosition().getId(),
-                employee.getUser().getPosition().getSalary()
-        );
-
+        EmployeeGetDTO employeeGetDTO = getEmployeeGetDTO(employee);
         return ApiResult.success(employeeGetDTO);
     }
 
@@ -119,6 +108,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 //        employeeRepository.save(employee);
 
 //        user.setEmployee(employee);
+
 //        userRepository.save(user);
 
         String verificationCode = String.valueOf(new Random().nextInt(100000, 999999));
@@ -139,8 +129,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     public ApiResult<EmployeeAndUserDTO> updateEmployee(Integer id, EmployeeUpdateDto employeeDTO) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
         Optional<Position> positionById = positionRepository.findPositionById(employeeDTO.getPositionId());
-        if (optionalEmployee.isEmpty() || positionById.isEmpty()) {
-            return ApiResult.error("Employee or Position not found with id: " + id + " " + employeeDTO.getPositionId());
+
+        if (optionalEmployee.isEmpty()) {
+            return ApiResult.error("Employee not found with id: " + id);
+        }
+
+        if (positionById.isEmpty()) {
+            return ApiResult.error("Position not found with id: " + employeeDTO.getPositionId());
         }
 
         Employee employee = optionalEmployee.get();
@@ -151,6 +146,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setSpecialization(employeeDTO.getSpecialization());
         User user = employee.getUser();
         user.setPosition(positionById.get());
+        userRepository.save(user);
 
         employeeRepository.save(employee);
         return ApiResult.success("Employee updated successfully");
@@ -165,21 +161,25 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         Employee employee = optionalEmployee.get();
-        employee.setDeleted(true);
-        employeeRepository.save(employee);
+
+        employeeRepository.delete(employee);
+        userRepository.delete(employee.getUser());
 
         return ApiResult.success("Employee deleted successfully");
     }
 
     @Override
     public ApiResult<List<EmployeeGetDTO>> findByFirstNameOrLastName(String firstName, String lastName) {
-        List<Employee> searchFirstNameOrLastname = employeeRepository.findByFirstNameOrLastName(firstName, lastName);
-        if (searchFirstNameOrLastname.isEmpty()) {
+        List<Employee> employees = employeeRepository.findByFirstNameOrLastName(firstName, lastName);
+        if (employees.isEmpty()) {
             return ApiResult.error("Employee not found with " + firstName + " " + lastName);
         }
 
+        List<EmployeeGetDTO> list = employees.stream()
+                .map(this::getEmployeeGetDTO)
+                .toList();
 
-        return getListApiResult(searchFirstNameOrLastname);
+        return ApiResult.success(list);
 
     }
 
@@ -189,27 +189,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employees.isEmpty()) {
             return ApiResult.error("Employee not found with specialization " + specialization);
         }
+        List<EmployeeGetDTO> list = employees.stream()
+                .map(this::getEmployeeGetDTO)
+                .toList();
 
-
-        return getListApiResult(employees);
-    }
-
-    private ApiResult<List<EmployeeGetDTO>> getListApiResult(List<Employee> employees) {
-        List<EmployeeGetDTO> employeeGetDTOList = employees.stream()
-                .map(employee -> new EmployeeGetDTO(
-                        employee.getId(),
-                        employee.getFirstName(),
-                        employee.getLastName(),
-                        employee.getDateOfBirth(),
-                        employee.getSpecialization(),
-                        employee.getAttachment().getId(),
-                        employee.getUser().getPosition().getName(),
-                        employee.getUser().getPosition().getId(),
-                        employee.getUser().getPosition().getSalary()
-
-                )).toList();
-
-        return ApiResult.success(employeeGetDTOList);
+        return ApiResult.success(list);
     }
 
 
@@ -261,6 +245,40 @@ public class EmployeeServiceImpl implements EmployeeService {
         codeExpiryTimes.remove(email);
 
         return ApiResult.success("Verification successful.");
+    }
+
+    @Override
+    public ApiResult<String> updateEmployeeAttachment(EmployeeAttachmentDto attachmentDto) {
+        Optional<Employee> optionalEmployee = employeeRepository.findById(attachmentDto.getEmployeeId());
+        Optional<Attachment> optionalAttachment = attachmentRepository.findById(attachmentDto.getAttachmentId());
+        if (optionalEmployee.isEmpty()) {
+            return ApiResult.error("Employee not found with id: " + attachmentDto.getEmployeeId());
+        }
+        if (optionalAttachment.isEmpty()) {
+            return ApiResult.error("Attachment not found with id: " + attachmentDto.getAttachmentId());
+        }
+        Employee employee = optionalEmployee.get();
+        Attachment attachment = optionalAttachment.get();
+        employee.setAttachment(attachment);
+        employeeRepository.save(employee);
+        return ApiResult.success("Employee updated successfully");
+    }
+
+    private EmployeeGetDTO getEmployeeGetDTO(Employee employee) {
+        EmployeeGetDTO employeeGetDTO = new EmployeeGetDTO();
+        employeeGetDTO.setId(employee.getId());
+        employeeGetDTO.setFirstName(employee.getFirstName());
+        employeeGetDTO.setLastName(employee.getLastName());
+        employeeGetDTO.setBirthDate(employee.getDateOfBirth());
+        employeeGetDTO.setSpecialization(employee.getSpecialization());
+        if (employee.getAttachment() != null) {
+            employeeGetDTO.setAttachmentId(employee.getAttachment().getId());
+        }
+        employeeGetDTO.setUsername(employee.getUser().getUsername());
+        employeeGetDTO.setPosition(employee.getUser().getPosition().getName());
+        employeeGetDTO.setPositionId(employee.getUser().getPosition().getId());
+        employeeGetDTO.setSalary(employee.getUser().getPosition().getSalary());
+        return employeeGetDTO;
     }
 
 }

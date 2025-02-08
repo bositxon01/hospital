@@ -1,8 +1,6 @@
 package hospital.hospital_system.payload;
 
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +25,8 @@ public class EmployeeGetDTO {
     private Integer attachmentId;
 
     private String position;
+
+    private String username;
 
     private Integer positionId;
 
