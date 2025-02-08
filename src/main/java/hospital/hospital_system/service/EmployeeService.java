@@ -14,21 +14,15 @@ public interface EmployeeService {
 
     ApiResult<EmployeeGetDTO> getEmployeeById(Integer id);
 
-    ApiResult<EmployeeAndUserDTO> createEmployee(EmployeeAndUserDTO employeeDTO);
+    ApiResult<String> createEmployee(EmployeeAndUserDTO employeeDTO);
 
-    ApiResult<EmployeeAndUserDTO> updateEmployee(Integer id, EmployeeAndUserDTO employeeDTO);
+    ApiResult<String> updateEmployee(Integer id, EmployeeAndUserDTO employeeDTO);
 
-    ApiResult<EmployeeAndUserDTO> deleteEmployee(Integer id);
+    ApiResult<String> deleteEmployee(Integer id);
 
-    ApiResult<List<EmployeeGetDTO>> findByFirstNameOrLastName(String firstName, String lastName);
+    ApiResult<List<EmployeeGetDTO>> searchByFirstNameAndLastName(String firstName, String lastName);
 
     ApiResult<List<EmployeeGetDTO>> searchSpecialization(String specialization);
 
-    ApiResult<?> verify(String email, String code);
-
-    ApiResult<?> forgetPassword(String email);
-
-    ApiResult<?> verifyResetCode(String email, String code);
-
-    ApiResult<?> resetPassword(String email, String newPassword);
+    ApiResult<String> verify(String email, String code);
 }
