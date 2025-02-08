@@ -1,5 +1,7 @@
 package hospital.hospital_system.controller;
 
+import hospital.hospital_system.aop.CheckAuth;
+import hospital.hospital_system.enums.PermissionEnum;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.EmployeeAndUserDTO;
 import hospital.hospital_system.payload.EmployeeGetDTO;
@@ -17,34 +19,30 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
 
-    //    @CheckAuth(permissions = PermissionEnum.VIEW_EMPLOYEE)
+    @CheckAuth(permissions = PermissionEnum.VIEW_EMPLOYEE)
     @GetMapping
     public ResponseEntity<ApiResult<List<EmployeeGetDTO>>> getAllEmployees() {
         ApiResult<List<EmployeeGetDTO>> employeeAll = employeeService.getAllEmployees();
         return ResponseEntity.ok(employeeAll);
     }
 
-    //    @CheckAuth(permissions = PermissionEnum.VIEW_EMPLOYEE)
+    @CheckAuth(permissions = PermissionEnum.VIEW_EMPLOYEE)
     @GetMapping("/{id}")
     public ResponseEntity<ApiResult<EmployeeGetDTO>> getEmployeeById(@PathVariable("id") Integer id) {
         ApiResult<EmployeeGetDTO> employeeById = employeeService.getEmployeeById(id);
         return ResponseEntity.ok(employeeById);
-
     }
 
-
-    //    @CheckAuth(permissions = PermissionEnum.VIEW_EMPLOYEE)
+    @CheckAuth(permissions = PermissionEnum.VIEW_EMPLOYEE)
     @GetMapping("/")
     public ResponseEntity<?> searchEmployee(@RequestParam(required = false) String firstName,
                                             @RequestParam(required = false) String lastName) {
         ApiResult<List<EmployeeGetDTO>> byFirstName = employeeService.findByFirstNameOrLastName(firstName, lastName);
         return ResponseEntity.ok(byFirstName);
-
     }
 
-    //    @CheckAuth(permissions = PermissionEnum.VIEW_EMPLOYEE)
+    @CheckAuth(permissions = PermissionEnum.VIEW_EMPLOYEE)
     @GetMapping("/searchSpecializations/")
-
     public ResponseEntity<?> searchEmployee(@RequestParam(required = false) String specialization) {
         if (specialization != null) {
             ApiResult<List<EmployeeGetDTO>> searchSpecialization = employeeService.searchSpecialization(specialization);
@@ -53,13 +51,12 @@ public class EmployeeController {
         return ResponseEntity.badRequest().body("Specialization not found");
     }
 
-    //    @CheckAuth(permissions = PermissionEnum.CREATE_EMPLOYEE)
+    @CheckAuth(permissions = PermissionEnum.CREATE_EMPLOYEE)
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody EmployeeAndUserDTO employeeDTO) {
         ApiResult<EmployeeAndUserDTO> employee = employeeService.createEmployee(employeeDTO);
         return ResponseEntity.ok(employee);
     }
-
 
     @PostMapping("/verify")
     public ResponseEntity<?> verify(@RequestParam String email, @RequestParam String code) {
@@ -67,7 +64,7 @@ public class EmployeeController {
         return ResponseEntity.ok(verify);
     }
 
-    //    @CheckAuth(permissions = PermissionEnum.EDIT_EMPLOYEE)
+    @CheckAuth(permissions = PermissionEnum.EDIT_EMPLOYEE)
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Integer id,
                                     @RequestBody EmployeeAndUserDTO employeeDTO) {
@@ -75,11 +72,31 @@ public class EmployeeController {
         return ResponseEntity.ok(updateEmployee);
     }
 
-    //    @CheckAuth(permissions = PermissionEnum.DELETE_EMPLOYEE)
+    @CheckAuth(permissions = PermissionEnum.DELETE_EMPLOYEE)
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
         ApiResult<EmployeeAndUserDTO> deleteEmployee = employeeService.deleteEmployee(id);
         return ResponseEntity.ok(deleteEmployee);
+    }
+
+    @PostMapping("/forget-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+        ApiResult<?> response = employeeService.forgetPassword(email);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/verify-reset-code")
+    public ResponseEntity<?> verifyResetCode(@RequestParam String email,
+                                             @RequestParam String code) {
+        ApiResult<?> response = employeeService.verifyResetCode(email, code);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestParam String email,
+                                           @RequestParam String newPassword) {
+        ApiResult<?> response = employeeService.resetPassword(email, newPassword);
+        return ResponseEntity.ok(response);
     }
 
 }

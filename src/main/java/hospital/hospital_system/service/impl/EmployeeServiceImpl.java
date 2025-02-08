@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-
 @Service
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
@@ -33,13 +32,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final PositionRepository positionRepository;
     private final EmailService emailService;
 
-
     private final Map<String, Integer> attemptCounts = new ConcurrentHashMap<>();
     private final Map<String, Long> codeExpiryTimes = new ConcurrentHashMap<>();
     private final Map<String, String> verificationCodes = new ConcurrentHashMap<>();
     private final Map<String, User> codeAndUserMap = new ConcurrentHashMap<>();
     private final Map<String, Employee> codeAndEmployeeMap = new ConcurrentHashMap<>();
 
+    private final Integer EXPIRY_TIME = 60_000;
 
     @Override
     public ApiResult<List<EmployeeGetDTO>> getAllEmployees() {
@@ -52,7 +51,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         return getListApiResult(employees);
     }
 
-
     @Override
     public ApiResult<EmployeeGetDTO> getEmployeeById(Integer id) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
@@ -62,17 +60,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee employee = optionalEmployee.get();
 
-        EmployeeGetDTO employeeGetDTO = new EmployeeGetDTO(
-                employee.getId(),
-                employee.getFirstName(),
-                employee.getLastName(),
-                employee.getDateOfBirth(),
-                employee.getSpecialization(),
-                employee.getAttachment().getId(),
-                employee.getUser().getPosition().getName(),
-                employee.getUser().getPosition().getId(),
-                employee.getUser().getPosition().getSalary()
-        );
+        EmployeeGetDTO employeeGetDTO = getEmployeeGetDTO(employee);
 
         return ApiResult.success(employeeGetDTO);
     }
@@ -120,12 +108,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 //        user.setEmployee(employee);
 //        userRepository.save(user);
 
-        String verificationCode = String.valueOf(new Random().nextInt(100000, 999999));
+        String verificationCode = generateVerificationCode();
+
         verificationCodes.put(userEmail, verificationCode);
         codeAndUserMap.put(verificationCode, user);
         codeAndEmployeeMap.put(verificationCode, employee);
-        codeExpiryTimes.put(userEmail, System.currentTimeMillis() + 60000);
-
+        codeExpiryTimes.put(userEmail, System.currentTimeMillis() + EXPIRY_TIME);
 
         emailService.sendVerificationEmail(userEmail, verificationCode);
 
@@ -137,6 +125,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public ApiResult<EmployeeAndUserDTO> updateEmployee(Integer id, EmployeeAndUserDTO employeeDTO) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+
         if (optionalEmployee.isEmpty()) {
             return ApiResult.error("Employee not found with id: " + id);
         }
@@ -149,6 +138,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setSpecialization(employeeDTO.getSpecialization());
 
         employeeRepository.save(employee);
+
         return ApiResult.success("Employee updated successfully");
     }
 
@@ -156,12 +146,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public ApiResult<EmployeeAndUserDTO> deleteEmployee(Integer id) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+
         if (optionalEmployee.isEmpty()) {
             return ApiResult.error("Employee not found with id: " + id);
         }
 
         Employee employee = optionalEmployee.get();
-        employee.setDeleted(true);
         employeeRepository.save(employee);
 
         return ApiResult.success("Employee deleted successfully");
@@ -174,9 +164,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return ApiResult.error("Employee not found with " + firstName + " " + lastName);
         }
 
-
         return getListApiResult(searchFirstNameOrLastname);
-
     }
 
     @Override
@@ -186,28 +174,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             return ApiResult.error("Employee not found with specialization " + specialization);
         }
 
-
         return getListApiResult(employees);
     }
-
-    private ApiResult<List<EmployeeGetDTO>> getListApiResult(List<Employee> employees) {
-        List<EmployeeGetDTO> employeeGetDTOList = employees.stream()
-                .map(employee -> new EmployeeGetDTO(
-                        employee.getId(),
-                        employee.getFirstName(),
-                        employee.getLastName(),
-                        employee.getDateOfBirth(),
-                        employee.getSpecialization(),
-                        employee.getAttachment().getId(),
-                        employee.getUser().getPosition().getName(),
-                        employee.getUser().getPosition().getId(),
-                        employee.getUser().getPosition().getSalary()
-
-                )).toList();
-
-        return ApiResult.success(employeeGetDTOList);
-    }
-
 
     @Override
     public ApiResult<?> verify(String email, String code) {
@@ -257,6 +225,85 @@ public class EmployeeServiceImpl implements EmployeeService {
         codeExpiryTimes.remove(email);
 
         return ApiResult.success("Verification successful.");
+    }
+
+    @Override
+    public ApiResult<?> forgetPassword(String email) {
+        Optional<User> optionalUser = userRepository.findByUsername(email);
+
+        if (optionalUser.isEmpty()) {
+            return ApiResult.error("User not found with email: " + email);
+        }
+
+        String verificationCode = generateVerificationCode();
+
+        verificationCodes.put(email, verificationCode);
+        codeExpiryTimes.put(email, System.currentTimeMillis() + EXPIRY_TIME);
+
+        emailService.sendVerificationEmail(email, verificationCode);
+
+        return ApiResult.success("Verification code sent successfully to" + email);
+    }
+
+    @Override
+    public ApiResult<?> verifyResetCode(String email, String code) {
+        String storedCode = verificationCodes.get(email);
+
+        if (storedCode == null || System.currentTimeMillis() > codeExpiryTimes.getOrDefault(email, 0L)) {
+            verificationCodes.remove(email);
+            return ApiResult.error("Verification code has expired. Please request a new verification code.");
+        }
+
+        if (!storedCode.equals(code)) {
+            return ApiResult.error("Invalid verification code. Please request a new verification code.");
+        }
+
+        return ApiResult.success("Verification successful. You can now reset your password");
+    }
+
+    @Override
+    public ApiResult<?> resetPassword(String email, String newPassword) {
+        Optional<User> optionalUser = userRepository.findByUsername(email);
+
+        if (optionalUser.isEmpty()) {
+            return ApiResult.error("User not found with email: " + email);
+        }
+
+        User user = optionalUser.get();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        verificationCodes.remove(email);
+        codeExpiryTimes.remove(email);
+
+        return ApiResult.success("Password reset successfully");
+    }
+
+    private static EmployeeGetDTO getEmployeeGetDTO(Employee employee) {
+        return new EmployeeGetDTO(
+                employee.getId(),
+                employee.getFirstName(),
+                employee.getLastName(),
+                employee.getDateOfBirth(),
+                employee.getSpecialization(),
+                employee.getAttachment().getId(),
+                employee.getUser().getPosition().getName(),
+                employee.getUser().getPosition().getId(),
+                employee.getUser().getPosition().getSalary()
+        );
+    }
+
+    private ApiResult<List<EmployeeGetDTO>> getListApiResult(List<Employee> employees) {
+        List<EmployeeGetDTO> employeeGetDTOList = employees
+                .stream()
+                .map(EmployeeServiceImpl::getEmployeeGetDTO)
+                .toList();
+
+        return ApiResult.success(employeeGetDTOList);
+    }
+
+    private static String generateVerificationCode() {
+        return String.valueOf(new Random().nextInt(100_000, 999_999));
     }
 
 }

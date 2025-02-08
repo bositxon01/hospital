@@ -32,5 +32,4 @@ public class EmployeeGetDTO {
 
     private Double salary;
 
-
 }

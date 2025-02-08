@@ -22,8 +22,8 @@ import java.util.List;
 @ToString
 @Entity(name = "users")
 
-@SQLRestriction(value = "deleted=false")
-@SQLDelete(sql =( "update users set deleted=true where id=?"))
+@SQLRestriction(value = "is_deleted=false")
+@SQLDelete(sql =( "update users set is_deleted=true where id=?"))
 public class  User extends AbsIntegerEntity implements UserDetails {
     @NotBlank
     @Email

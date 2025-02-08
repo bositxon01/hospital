@@ -13,8 +13,6 @@ import lombok.*;
 @Setter
 @Entity
 @ToString
-
-
 public class Attachment extends AbsIntegerEntity {
 
     @NotBlank(message = "FileName cannot be blank")

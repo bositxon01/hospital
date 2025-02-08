@@ -17,13 +17,18 @@ public class EmployeeAndUserDTO {
 
     @NotBlank(message = "First name cannot be blank")
     private String firstName;
+
     @NotBlank(message = "Lastname cannot be blank")
     private String lastName;
+
     @Past(message = "The birth date must be in the past!")
     private LocalDate birthDate;
+
     private String specialization;
+
     @NotBlank(message = "Username cannot be blank")
     private String username;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank(message = "Password cannot be blank")
     private String password;
