@@ -8,6 +8,7 @@ import hospital.hospital_system.payload.PositionDTO;
 import hospital.hospital_system.repository.PositionPermissionRepository;
 import hospital.hospital_system.repository.PositionRepository;
 import hospital.hospital_system.service.PositionService;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.Optional;
 public class PositionServiceImpl implements PositionService {
     private final PositionRepository positionRepository;
     private final PositionPermissionRepository positionPermissionRepository;
+    private final EntityManager entityManager;
 
     @Override
     public ApiResult<List<PositionDTO>> getAllPositions() {
@@ -120,4 +122,5 @@ public class PositionServiceImpl implements PositionService {
             return ApiResult.error(e.getMessage());
         }
     }
+
 }

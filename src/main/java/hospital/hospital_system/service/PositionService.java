@@ -17,6 +17,7 @@ public interface PositionService {
     ApiResult<PositionDTO> update(Integer id, PositionDTO positionDTO);
 
     ApiResult<PositionDTO> delete(Integer id);
+
 }
 
 

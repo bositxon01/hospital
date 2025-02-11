@@ -7,6 +7,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
+@FieldNameConstants
 public class Employee extends Person {
 
     @ToString.Exclude

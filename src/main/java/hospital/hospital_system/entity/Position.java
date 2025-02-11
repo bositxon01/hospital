@@ -8,6 +8,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
+@FieldNameConstants
 public class Position extends AbsIntegerEntity {
     @NotBlank
     @Column(unique = true, nullable = false)

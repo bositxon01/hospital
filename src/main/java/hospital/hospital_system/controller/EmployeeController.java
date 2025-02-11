@@ -33,25 +33,7 @@ public class EmployeeController {
     }
 
 
-    @CheckAuth(permissions = PermissionEnum.VIEW_EMPLOYEE)
-    @GetMapping("/")
-    public ResponseEntity<?> searchEmployee(@RequestParam(required = false) String firstName,
-                                            @RequestParam(required = false) String lastName) {
-        ApiResult<List<EmployeeGetDTO>> byFirstName = employeeService.findByFirstNameOrLastName(firstName, lastName);
-        return ResponseEntity.ok(byFirstName);
 
-    }
-
-    @CheckAuth(permissions = PermissionEnum.VIEW_EMPLOYEE)
-    @GetMapping("/searchSpecializations")
-
-    public ResponseEntity<?> searchEmployee(@RequestParam(required = false) String specialization) {
-        if (specialization != null) {
-            ApiResult<List<EmployeeGetDTO>> searchSpecialization = employeeService.searchSpecialization(specialization);
-            return ResponseEntity.ok(searchSpecialization);
-        }
-        return ResponseEntity.badRequest().body("Specialization not found");
-    }
 
     @CheckAuth(permissions = PermissionEnum.CREATE_EMPLOYEE)
     @PostMapping("/create")
@@ -88,5 +70,12 @@ public class EmployeeController {
         ApiResult<EmployeeAndUserDTO> deleteEmployee = employeeService.deleteEmployee(id);
         return ResponseEntity.ok(deleteEmployee);
     }
+
+@GetMapping("/filter")
+    public ResponseEntity<?>filter(EmployeeFilterDTO employeeFilterDTO) {
+    ApiResult<List<EmployeeGetDTO>> filter = employeeService.filter(employeeFilterDTO);
+    return ResponseEntity.ok(filter);
+}
+
 
 }

@@ -1,9 +1,6 @@
 package hospital.hospital_system.service.impl;
 
-import hospital.hospital_system.entity.Attachment;
-import hospital.hospital_system.entity.Employee;
-import hospital.hospital_system.entity.Position;
-import hospital.hospital_system.entity.User;
+import hospital.hospital_system.entity.*;
 import hospital.hospital_system.payload.*;
 import hospital.hospital_system.repository.AttachmentRepository;
 import hospital.hospital_system.repository.EmployeeRepository;
@@ -11,11 +8,14 @@ import hospital.hospital_system.repository.PositionRepository;
 import hospital.hospital_system.repository.UserRepository;
 import hospital.hospital_system.service.EmailService;
 import hospital.hospital_system.service.EmployeeService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final EntityManager entityManager;
     private final UserRepository userRepository;
     private final AttachmentRepository attachmentRepository;
     private final PasswordEncoder passwordEncoder;
@@ -168,34 +169,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ApiResult.success("Employee deleted successfully");
     }
 
-    @Override
-    public ApiResult<List<EmployeeGetDTO>> findByFirstNameOrLastName(String firstName, String lastName) {
-        List<Employee> employees = employeeRepository.findByFirstNameOrLastName(firstName, lastName);
-        if (employees.isEmpty()) {
-            return ApiResult.error("Employee not found with " + firstName + " " + lastName);
-        }
-
-        List<EmployeeGetDTO> list = employees.stream()
-                .map(this::getEmployeeGetDTO)
-                .toList();
-
-        return ApiResult.success(list);
-
-    }
-
-    @Override
-    public ApiResult<List<EmployeeGetDTO>> searchSpecialization(String specialization) {
-        List<Employee> employees = employeeRepository.findBySpecializationContaining(specialization);
-        if (employees.isEmpty()) {
-            return ApiResult.error("Employee not found with specialization " + specialization);
-        }
-        List<EmployeeGetDTO> list = employees.stream()
-                .map(this::getEmployeeGetDTO)
-                .toList();
-
-        return ApiResult.success(list);
-    }
-
 
     @Override
     public ApiResult<?> verify(String email, String code) {
@@ -262,6 +235,114 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setAttachment(attachment);
         employeeRepository.save(employee);
         return ApiResult.success("Employee updated successfully");
+    }
+
+    @Override
+    public ApiResult<List<EmployeeGetDTO>> filter(EmployeeFilterDTO employeeFilterDTO) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<Employee> criteriaQuery = criteriaBuilder.createQuery(Employee.class);
+
+        Root<Employee> root = criteriaQuery.from(Employee.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        if (Objects.nonNull(employeeFilterDTO.getFirstName())) {
+
+            Expression<String> path = root.get(Person.Fields.firstName);
+
+            Predicate predicate = criteriaBuilder.like
+                    (path,
+                            "%" + employeeFilterDTO.getFirstName() + "%");
+
+
+            predicates.add(predicate);
+        }
+
+        if (Objects.nonNull(employeeFilterDTO.getLastName())) {
+
+            Expression<String> path = root.get(Person.Fields.lastName);
+
+            Predicate predicate = criteriaBuilder.like
+                    (path,
+                            "%" + employeeFilterDTO.getLastName() + "%");
+
+
+            predicates.add(predicate);
+        }
+
+        if (Objects.nonNull(employeeFilterDTO.getSpecialization())) {
+            Path<String> path = root.get(Employee.Fields.specialization);
+            Predicate predicate = criteriaBuilder.like(path, "%" + employeeFilterDTO.getSpecialization() + "%");
+            predicates.add(predicate);
+        }
+
+        if (Objects.nonNull(employeeFilterDTO.getPositionName())){
+            Join<Object, Object> userJoin = root.join("user");
+            Join<Object, Object> positionJoin = userJoin.join("position");
+            Path<String> path = positionJoin.get(Position.Fields.name);
+            Predicate predicate = criteriaBuilder.like(path,"%" + employeeFilterDTO.getPositionName() + "%");
+            predicates.add(predicate);
+        }
+
+        if (Objects.nonNull(employeeFilterDTO.getBirthDateFrom()) && Objects.nonNull(employeeFilterDTO.getBirthDateTo())) {
+
+            Expression<LocalDate> path = root.get(Person.Fields.dateOfBirth);
+
+            Predicate predicate = criteriaBuilder.between(
+                    path,
+                    employeeFilterDTO.getBirthDateFrom(),
+                    employeeFilterDTO.getBirthDateTo()
+            );
+
+
+            predicates.add(predicate);
+        }
+        criteriaQuery.where(predicates.toArray(new Predicate[0]));
+        List<Employee> employeeList = entityManager.createQuery(criteriaQuery).getResultList();
+        List<EmployeeGetDTO> employeeGetDTOList = employeeList.stream().map(employee -> {
+            EmployeeGetDTO employeeGetDTO = new EmployeeGetDTO();
+            employeeGetDTO.setId(employee.getId());
+            employeeGetDTO.setFirstName(employee.getFirstName());
+            employeeGetDTO.setLastName(employee.getLastName());
+            employeeGetDTO.setSpecialization(employee.getSpecialization());
+            employeeGetDTO.setBirthDate(employee.getDateOfBirth());
+
+            // Null tekshiruvi: Attachment bo‘lsa, ID olinadi, aks holda null
+            employeeGetDTO.setAttachmentId(employee.getAttachment() != null ? employee.getAttachment().getId() : null);
+
+            // Null tekshiruvi: User mavjud bo‘lsa, Username olinadi, aks holda null
+            employeeGetDTO.setUsername(employee.getUser() != null ? employee.getUser().getUsername() : null);
+
+            // Null tekshiruvi: User va Position mavjud bo‘lsa, Position nomi olinadi, aks holda null
+            employeeGetDTO.setPosition(
+                    employee.getUser() != null && employee.getUser().getPosition() != null
+                            ? employee.getUser().getPosition().getName()
+                            : null
+            );
+
+            // Null tekshiruvi: Position ID
+            employeeGetDTO.setPositionId(
+                    employee.getUser() != null && employee.getUser().getPosition() != null
+                            ? employee.getUser().getPosition().getId()
+                            : null
+            );
+
+            // Null tekshiruvi: Salary
+            employeeGetDTO.setSalary(
+                    employee.getUser() != null && employee.getUser().getPosition() != null
+                            ? employee.getUser().getPosition().getSalary()
+                            : null
+            );
+
+            return employeeGetDTO;
+        }).toList();
+
+        if (employeeGetDTOList.isEmpty()) {
+            return ApiResult.success("Employees not found!!");
+        }
+
+        return ApiResult.success(employeeGetDTOList);
     }
 
     private EmployeeGetDTO getEmployeeGetDTO(Employee employee) {
