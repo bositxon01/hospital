@@ -33,26 +33,6 @@ public class EmployeeController {
     }
 
 
-    @CheckAuth(permissions = PermissionEnum.VIEW_EMPLOYEE)
-    @GetMapping("/")
-    public ResponseEntity<?> searchEmployee(@RequestParam(required = false) String firstName,
-                                            @RequestParam(required = false) String lastName) {
-        ApiResult<List<EmployeeGetDTO>> byFirstName = employeeService.findByFirstNameOrLastName(firstName, lastName);
-        return ResponseEntity.ok(byFirstName);
-
-    }
-
-    @CheckAuth(permissions = PermissionEnum.VIEW_EMPLOYEE)
-    @GetMapping("/searchSpecializations")
-
-    public ResponseEntity<?> searchEmployee(@RequestParam(required = false) String specialization) {
-        if (specialization != null) {
-            ApiResult<List<EmployeeGetDTO>> searchSpecialization = employeeService.searchSpecialization(specialization);
-            return ResponseEntity.ok(searchSpecialization);
-        }
-        return ResponseEntity.badRequest().body("Specialization not found");
-    }
-
     @CheckAuth(permissions = PermissionEnum.CREATE_EMPLOYEE)
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody EmployeeAndUserDTO employeeDTO) {
@@ -76,6 +56,7 @@ public class EmployeeController {
         return ResponseEntity.ok(updateEmployee);
     }
 
+    @CheckAuth(permissions = PermissionEnum.EDIT_EMPLOYEE)
     @PutMapping("/attachment")
     public ResponseEntity<?> updateAttachment(@RequestBody EmployeeAttachmentDto attachmentDto) {
         ApiResult<String> apiResult = employeeService.updateEmployeeAttachment(attachmentDto);

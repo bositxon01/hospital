@@ -32,20 +32,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmailService emailService;
 
 
-    private final Map<String, Integer> attemptCounts = new ConcurrentHashMap<>();
-    private final Map<String, Long> codeExpiryTimes = new ConcurrentHashMap<>();
-    private final Map<String, String> verificationCodes = new ConcurrentHashMap<>();
-    private final Map<String, User> codeAndUserMap = new ConcurrentHashMap<>();
-    private final Map<String, Employee> codeAndEmployeeMap = new ConcurrentHashMap<>();
+    private final Map<String, VerificationInfo> verificationData = new ConcurrentHashMap<>();
 
+    private static final Integer EXPIRY_TIME = 60_000;
 
     @Override
     public ApiResult<List<EmployeeGetDTO>> getAllEmployees() {
         List<Employee> employees = employeeRepository.findAll();
-
-        if (employees.isEmpty()) {
-            return ApiResult.success("Employees not found");
-        }
 
         List<EmployeeGetDTO> list = employees.stream()
                 .map(this::getEmployeeGetDTO
@@ -67,11 +60,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ApiResult.success(employeeGetDTO);
     }
 
+
     @Override
+    @Transactional
     public ApiResult<EmployeeAndUserDTO> createEmployee(EmployeeAndUserDTO employeeDTO) {
         String userEmail = employeeDTO.getUsername();
-        Optional<User> username = userRepository.findByUsername(userEmail);
-        if (username.isPresent()) {
+        if (userRepository.existsByUsername(userEmail)) {
             return ApiResult.error("Employee already exists with username: " + userEmail);
         }
 
@@ -103,19 +97,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setDateOfBirth(employeeDTO.getBirthDate());
         employee.setSpecialization(employeeDTO.getSpecialization());
 
-//        employee.setUser(user);
+        String verificationCode = getVerificationCode();
 
-//        employeeRepository.save(employee);
+        VerificationInfo verificationInfo = new VerificationInfo(
+                verificationCode,
+                user,
+                employee,
+                System.currentTimeMillis() + EXPIRY_TIME,
+                0
+        );
 
-//        user.setEmployee(employee);
-
-//        userRepository.save(user);
-
-        String verificationCode = String.valueOf(new Random().nextInt(100000, 999999));
-        verificationCodes.put(userEmail, verificationCode);
-        codeAndUserMap.put(verificationCode, user);
-        codeAndEmployeeMap.put(verificationCode, employee);
-        codeExpiryTimes.put(userEmail, System.currentTimeMillis() + 60000);
+        verificationData.put(userEmail, verificationInfo);
 
 
         emailService.sendVerificationEmail(userEmail, verificationCode);
@@ -126,6 +118,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public ApiResult<EmployeeAndUserDTO> updateEmployee(Integer id, EmployeeUpdateDto employeeDTO) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
         Optional<Position> positionById = positionRepository.findPositionById(employeeDTO.getPositionId());
@@ -168,61 +161,27 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ApiResult.success("Employee deleted successfully");
     }
 
-    @Override
-    public ApiResult<List<EmployeeGetDTO>> findByFirstNameOrLastName(String firstName, String lastName) {
-        List<Employee> employees = employeeRepository.findByFirstNameOrLastName(firstName, lastName);
-        if (employees.isEmpty()) {
-            return ApiResult.error("Employee not found with " + firstName + " " + lastName);
-        }
-
-        List<EmployeeGetDTO> list = employees.stream()
-                .map(this::getEmployeeGetDTO)
-                .toList();
-
-        return ApiResult.success(list);
-
-    }
 
     @Override
-    public ApiResult<List<EmployeeGetDTO>> searchSpecialization(String specialization) {
-        List<Employee> employees = employeeRepository.findBySpecializationContaining(specialization);
-        if (employees.isEmpty()) {
-            return ApiResult.error("Employee not found with specialization " + specialization);
-        }
-        List<EmployeeGetDTO> list = employees.stream()
-                .map(this::getEmployeeGetDTO)
-                .toList();
-
-        return ApiResult.success(list);
-    }
-
-
-    @Override
+    @Transactional
     public ApiResult<?> verify(String email, String code) {
-        String verificationCode = verificationCodes.get(email);
+        VerificationInfo verificationInfo = verificationData.get(email);
 
         // Agar kod mavjud bo‘lmasa yoki muddati o‘tgan bo‘lsa
-        if (verificationCode == null || System.currentTimeMillis() > codeExpiryTimes.getOrDefault(email, 0L)) {
-            verificationCodes.remove(email);
-            attemptCounts.remove(email);
+        if (verificationInfo == null || System.currentTimeMillis() > verificationInfo.getExpiryTime()) {
+            verificationData.remove(email);
             return ApiResult.error("The verification code has expired. Please request a new one.");
         }
 
-        // Urinishlar sonini olish yoki boshlang‘ich qiymat berish
-        int attempts = attemptCounts.getOrDefault(email, 0);
 
         // Noto‘g‘ri kod kiritilgan holat
-        if (!code.equals(verificationCode)) {
-            attempts++;
-            attemptCounts.put(email, attempts);
+        if (!code.equals(verificationInfo.getCode())) {
+            int attempts = verificationInfo.getAttempts();
+            verificationInfo.setAttempts(attempts + 1);
 
             // Maksimal urinishlar soni (masalan, 3 marta)
             if (attempts >= 3) {
-                verificationCodes.remove(email);
-                attemptCounts.remove(email);
-                codeAndUserMap.remove(email);
-                codeExpiryTimes.remove(email);
-                codeAndEmployeeMap.remove(email);
+                verificationData.remove(email);
                 return ApiResult.error("Too many incorrect attempts. Please request a new verification code.");
             }
 
@@ -230,24 +189,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         // Agar kod to‘g‘ri bo‘lsa:
-        User user = codeAndUserMap.get(verificationCode);
-        Employee employee = codeAndEmployeeMap.get(verificationCode);
-
+        User user = verificationInfo.getUser();
         userRepository.save(user);
+        Employee employee = verificationInfo.getEmployee();
         employee.setUser(user);
         employeeRepository.save(employee);
 
         // Muvaffaqiyatli tasdiqlashdan so‘ng barcha vaqtinchalik ma’lumotlarni o‘chiramiz
-        verificationCodes.remove(email);
-        codeAndUserMap.remove(verificationCode);
-        codeAndEmployeeMap.remove(verificationCode);
-        attemptCounts.remove(email);
-        codeExpiryTimes.remove(email);
-
+        verificationData.remove(email);
         return ApiResult.success("Verification successful.");
     }
 
     @Override
+    @Transactional
     public ApiResult<String> updateEmployeeAttachment(EmployeeAttachmentDto attachmentDto) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(attachmentDto.getEmployeeId());
         Optional<Attachment> optionalAttachment = attachmentRepository.findById(attachmentDto.getAttachmentId());
@@ -263,6 +217,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeRepository.save(employee);
         return ApiResult.success("Employee updated successfully");
     }
+
 
     private EmployeeGetDTO getEmployeeGetDTO(Employee employee) {
         EmployeeGetDTO employeeGetDTO = new EmployeeGetDTO();
@@ -281,4 +236,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeGetDTO;
     }
 
+
+    private static String getVerificationCode() {
+        return String.valueOf(new Random().nextInt(100000, 999999));
+    }
 }

@@ -18,10 +18,6 @@ public interface EmployeeService {
 
     ApiResult<EmployeeAndUserDTO> deleteEmployee(Integer id);
 
-    ApiResult<List<EmployeeGetDTO>> findByFirstNameOrLastName(String firstName, String lastName);
-
-    ApiResult<List<EmployeeGetDTO>> searchSpecialization(String specialization);
-
     ApiResult<?> verify(String email, String code);
 
     ApiResult<String> updateEmployeeAttachment(EmployeeAttachmentDto attachmentDto);
