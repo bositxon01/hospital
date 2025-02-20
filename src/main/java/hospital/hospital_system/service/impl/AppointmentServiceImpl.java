@@ -5,14 +5,13 @@ import hospital.hospital_system.enums.DayEnum;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.AppointmentGetDto;
 import hospital.hospital_system.payload.AppointmentPostDto;
-import hospital.hospital_system.payload.DoctorAvailableSlotsDto;
+import hospital.hospital_system.payload.EmployeeAvailableSlotsDto;
 import hospital.hospital_system.repository.AppointmentRepository;
 import hospital.hospital_system.repository.EmployeeRepository;
 import hospital.hospital_system.repository.PatientRepository;
 import hospital.hospital_system.repository.WorkTimeRepository;
 import hospital.hospital_system.service.AppointmentService;
 import hospital.hospital_system.service.EmployeeService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,6 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -57,31 +55,59 @@ public class AppointmentServiceImpl implements AppointmentService {
         return ApiResult.success(appointmentDto);
     }
 
+
     @Override
     public ApiResult<AppointmentGetDto> save(AppointmentPostDto appointmentPostDto) {
-        List<Appointment> allByAppointmentTime = appointmentRepository.findAllByAppointmentTime(appointmentPostDto.getAppointmentTime());
-        for (Appointment appointment : allByAppointmentTime) {
-            if (Objects.equals(appointment.getEmployee().getId(), appointmentPostDto.getEmployeeId())) {
-                return ApiResult.error("Employee is busy for this time");
-            }
-        }
+        // Check if the patient exists
         Optional<Patient> optionalPatient = patientRepository.findById(appointmentPostDto.getPatientId());
         if (optionalPatient.isEmpty()) {
             return ApiResult.error("Patient not found with id " + appointmentPostDto.getPatientId());
         }
+
+        // Check if the employee exists
         Optional<Employee> optionalEmployee = employeeRepository.findById(appointmentPostDto.getEmployeeId());
         if (optionalEmployee.isEmpty()) {
-            return ApiResult.error("Employee not found with id " + appointmentPostDto.getEmployeeId());
+            return ApiResult.error("Doctor not found with id " + appointmentPostDto.getEmployeeId());
         }
-        List<WorkTime> workTimes = optionalEmployee.get().getWorkTimes();
 
-        return ApiResult.error("Hali hich narsa ishlamayapti");
+        Employee employee = optionalEmployee.get();
+
+        // Extract LocalDate and LocalTime from Timestamp
+        LocalDate appointmentDate = appointmentPostDto.getAppointmentTime().toLocalDate();
+        LocalTime appointmentTime = appointmentPostDto.getAppointmentTime().toLocalTime();
+
+        // Fetch employee's available slots for the given date
+        List<EmployeeAvailableSlotsDto> availableSlotsList = getAvailableSlots(appointmentDate);
+        Optional<EmployeeAvailableSlotsDto> employeeSlots = availableSlotsList.stream()
+                .filter(slot -> slot.getEmployeeId().equals(employee.getId()))
+                .findFirst();
+
+        // If no slots are found for the employee on that day, return an error
+        if (employeeSlots.isEmpty()) {
+            return ApiResult.error("Doctor is not available on this date: " + appointmentDate);
+        }
+
+        // Check if the selected time is in available slots
+        boolean isAvailable = employeeSlots.get().getAvailableSlots().contains(appointmentTime.toString());
+        if (!isAvailable) {
+            return ApiResult.error("Doctor is busy at this time: " + appointmentTime);
+        }
+
+        // Create and save the appointment
+        Appointment appointment = new Appointment();
+        appointment.setPatient(optionalPatient.get());
+        appointment.setEmployee(employee);
+        appointment.setAppointmentTime(Timestamp.valueOf(appointmentPostDto.getAppointmentTime()));
+
+        appointmentRepository.save(appointment);
+
+        return ApiResult.success(getAppointmentDto(appointment));
     }
 
     @Override
-    public List<DoctorAvailableSlotsDto> getAvailableSlots(LocalDate date) {
+    public List<EmployeeAvailableSlotsDto> getAvailableSlots(LocalDate date) {
         List<Employee> employees = employeeRepository.findAll();
-        List<DoctorAvailableSlotsDto> result = new ArrayList<>();
+        List<EmployeeAvailableSlotsDto> result = new ArrayList<>();
 
         for (Employee employee : employees) {
 
@@ -98,7 +124,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 List<String> availableSlots = generateAvailableSlots(turn.getStartTime(), turn.getEndTime(), bookedAppointmentTimes);
 
                 if (!availableSlots.isEmpty()) {
-                    result.add(new DoctorAvailableSlotsDto(
+                    result.add(new EmployeeAvailableSlotsDto(
                             employee.getId(),
                             employee.getFirstName() + " " + employee.getLastName(),
                             employee.getSpecialization(),
@@ -131,30 +157,6 @@ public class AppointmentServiceImpl implements AppointmentService {
             slotTime = slotTime.plusMinutes(30); // Each slot is 30 minutes
         }
         return slots;
-    }
-
-    @Transactional
-    public void bookAppointment(AppointmentPostDto request) {
-        Employee employee = employeeRepository.findById(request.getEmployeeId())
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-        Integer patientId = request.getPatientId();
-        Optional<Patient> optionalPatient = patientRepository.findById(patientId);
-        if (optionalPatient.isEmpty()) {
-            return;
-        }
-        Patient patient = optionalPatient.get();
-
-        List<EmployeeRoom> employeeRooms = employee.getEmployeeRooms();
-        EmployeeRoom employeeRoom = employeeRooms.get(0);
-        Room room = employeeRoom.getRoom();
-
-        Appointment appointment = new Appointment();
-        appointment.setEmployee(employee);
-        appointment.setPatient(patient);
-        appointment.setAppointmentTime(request.getAppointmentTime());
-        appointment.setRoom(room);
-
-        appointmentRepository.save(appointment);
     }
 
     private AppointmentGetDto getAppointmentDto(Appointment appointment) {

@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,5 +13,5 @@ import java.sql.Timestamp;
 public class AppointmentPostDto {
     private Integer patientId;
     private Integer employeeId;
-    private Timestamp appointmentTime;
+    private LocalDateTime appointmentTime;
 }

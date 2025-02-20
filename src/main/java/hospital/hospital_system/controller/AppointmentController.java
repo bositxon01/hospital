@@ -2,8 +2,7 @@ package hospital.hospital_system.controller;
 
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.AppointmentGetDto;
-import hospital.hospital_system.payload.AppointmentPostDto;
-import hospital.hospital_system.payload.DoctorAvailableSlotsDto;
+import hospital.hospital_system.payload.EmployeeAvailableSlotsDto;
 import hospital.hospital_system.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -38,14 +37,9 @@ public class AppointmentController {
     }*/
 
     @GetMapping("/available-slots")
-    public ResponseEntity<List<DoctorAvailableSlotsDto>> getAvailableSlots(
+    public ResponseEntity<List<EmployeeAvailableSlotsDto>> getAvailableSlots(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return ResponseEntity.ok(appointmentService.getAvailableSlots(date));
     }
 
-    @PostMapping("/book")
-    public ResponseEntity<String> bookAppointment(@RequestBody AppointmentPostDto requestDto) {
-        appointmentService.bookAppointment(requestDto);
-        return ResponseEntity.ok("Appointment booked successfully!");
-    }
 }

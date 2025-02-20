@@ -3,7 +3,7 @@ package hospital.hospital_system.service;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.AppointmentGetDto;
 import hospital.hospital_system.payload.AppointmentPostDto;
-import hospital.hospital_system.payload.DoctorAvailableSlotsDto;
+import hospital.hospital_system.payload.EmployeeAvailableSlotsDto;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,7 +18,6 @@ public interface AppointmentService {
 
     ApiResult<AppointmentGetDto> save(AppointmentPostDto appointmentPostDto);
 
-    List<DoctorAvailableSlotsDto> getAvailableSlots(LocalDate date);
+    List<EmployeeAvailableSlotsDto> getAvailableSlots(LocalDate date);
 
-    void bookAppointment(AppointmentPostDto requestDto);
 }

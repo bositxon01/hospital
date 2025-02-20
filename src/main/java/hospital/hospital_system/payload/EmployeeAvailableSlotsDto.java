@@ -7,7 +7,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class DoctorAvailableSlotsDto {
+public class EmployeeAvailableSlotsDto {
     private Integer employeeId;
     private String employeeName;
     private String specialization;
