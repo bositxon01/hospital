@@ -74,6 +74,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             return ApiResult.error("Employee not found with id " + appointmentPostDto.getEmployeeId());
         }
         List<WorkTime> workTimes = optionalEmployee.get().getWorkTimes();
+
         return ApiResult.error("Hali hich narsa ishlamayapti");
     }
 
@@ -118,7 +119,8 @@ public class AppointmentServiceImpl implements AppointmentService {
             LocalTime finalSlotTime = slotTime;
 
             boolean isBooked = booked.stream()
-                    .anyMatch(a -> a.getAppointmentTime().toInstant()
+                    .anyMatch(a -> a.getAppointmentTime()
+                            .toInstant()
                             .atZone(ZoneId.systemDefault())
                             .toLocalTime()
                             .equals(finalSlotTime));
