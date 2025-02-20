@@ -2,6 +2,7 @@ package hospital.hospital_system.controller;
 
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.AppointmentGetDto;
+import hospital.hospital_system.payload.AppointmentPostDto;
 import hospital.hospital_system.payload.EmployeeAvailableSlotsDto;
 import hospital.hospital_system.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +32,11 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentGetDtoApiResult);
     }
 
-    /*@PostMapping("/create")
-    public ResponseEntity<ApiResult<String>> createAppointment() {
-
-    }*/
+    @PostMapping("/create")
+    public ResponseEntity<ApiResult<AppointmentGetDto>> createAppointment(@RequestBody AppointmentPostDto appointmentPostDto) {
+        ApiResult<AppointmentGetDto> apiResult = appointmentService.save(appointmentPostDto);
+        return ResponseEntity.ok(apiResult);
+    }
 
     @GetMapping("/available-slots")
     public ResponseEntity<List<EmployeeAvailableSlotsDto>> getAvailableSlots(

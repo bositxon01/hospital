@@ -6,10 +6,7 @@ import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.AppointmentGetDto;
 import hospital.hospital_system.payload.AppointmentPostDto;
 import hospital.hospital_system.payload.EmployeeAvailableSlotsDto;
-import hospital.hospital_system.repository.AppointmentRepository;
-import hospital.hospital_system.repository.EmployeeRepository;
-import hospital.hospital_system.repository.PatientRepository;
-import hospital.hospital_system.repository.WorkTimeRepository;
+import hospital.hospital_system.repository.*;
 import hospital.hospital_system.service.AppointmentService;
 import hospital.hospital_system.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +28,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final WorkTimeRepository workTimeRepository;
     private final EmployeeService employeeService;
     private final EmployeeRepository employeeRepository;
+    private final EmployeeRoomRepository employeeRoomRepository;
 
     @Override
     public ApiResult<List<AppointmentGetDto>> getAll() {
@@ -67,7 +65,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         // Check if the employee exists
         Optional<Employee> optionalEmployee = employeeRepository.findById(appointmentPostDto.getEmployeeId());
         if (optionalEmployee.isEmpty()) {
-            return ApiResult.error("Doctor not found with id " + appointmentPostDto.getEmployeeId());
+            return ApiResult.error("Employee not found with id " + appointmentPostDto.getEmployeeId());
         }
 
         Employee employee = optionalEmployee.get();
@@ -84,19 +82,28 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         // If no slots are found for the employee on that day, return an error
         if (employeeSlots.isEmpty()) {
-            return ApiResult.error("Doctor is not available on this date: " + appointmentDate);
+            return ApiResult.error("Employee is not available on this date: " + appointmentDate);
         }
 
         // Check if the selected time is in available slots
         boolean isAvailable = employeeSlots.get().getAvailableSlots().contains(appointmentTime.toString());
         if (!isAvailable) {
-            return ApiResult.error("Doctor is busy at this time: " + appointmentTime);
+            return ApiResult.error("Employee is busy at this time: " + appointmentTime);
         }
+
+        //finding room by EmployeeId
+        Optional<EmployeeRoom> employeeRoomByEmployeeId = employeeRoomRepository.findEmployeeRoomByEmployeeId(employee.getId());
+        if (employeeRoomByEmployeeId.isEmpty()) {
+            return ApiResult.error("Employee is not available on this date: " + appointmentDate);
+        }
+        EmployeeRoom employeeRoom = employeeRoomByEmployeeId.get();
+        Room room = employeeRoom.getRoom();
 
         // Create and save the appointment
         Appointment appointment = new Appointment();
         appointment.setPatient(optionalPatient.get());
         appointment.setEmployee(employee);
+        appointment.setRoom(room);
         appointment.setAppointmentTime(Timestamp.valueOf(appointmentPostDto.getAppointmentTime()));
 
         appointmentRepository.save(appointment);
