@@ -1,10 +1,7 @@
 package hospital.hospital_system.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -15,6 +12,12 @@ import java.sql.Timestamp;
 @Setter
 @ToString
 @Entity
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"appointment_time", "employee_id"}),
+                @UniqueConstraint(columnNames = {"room_id", "appointment_time"})
+        }
+)
 public class Appointment extends AbsIntegerEntity {
 
     @ManyToOne
