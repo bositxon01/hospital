@@ -26,7 +26,7 @@ public class Appointment extends AbsIntegerEntity {
     @ManyToOne
     private Patient patient;
 
-    @OneToOne
+    @ManyToOne
     private Room room;
 
     @Column(nullable = false)
