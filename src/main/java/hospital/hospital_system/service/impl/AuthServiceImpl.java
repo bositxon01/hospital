@@ -75,9 +75,7 @@ public class AuthServiceImpl implements AuthService {
         User user = (User) authentication.getPrincipal();
         System.out.println(user.getUsername());
 
-        String token = jwtProvider.generateToken(
-                loginDTO.getUsername(),
-                new Date(System.currentTimeMillis() + EXPIRE_TIME));
+        String token = jwtProvider.generateToken(user);
 
         return ApiResult.success(token);
     }
