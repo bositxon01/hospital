@@ -90,8 +90,8 @@ public class EmployeeRoomServiceImpl implements EmployeeRoomService {
     private EmployeeRoomDTO convertToDTO(EmployeeRoom employeeRoom) {
         return new EmployeeRoomDTO(
                 employeeRoom.getId(),
-                employeeRoom.getRoom().getId(),
-                employeeRoom.getEmployee().getId()
+                employeeRoom.getEmployee().getId(),
+                employeeRoom.getRoom().getId()
         );
     }
 }

@@ -4,18 +4,21 @@ import hospital.hospital_system.entity.User;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.LoginDTO;
 import hospital.hospital_system.repository.UserRepository;
+import hospital.hospital_system.security.JWTProvider;
 import hospital.hospital_system.service.AuthService;
 import hospital.hospital_system.service.EmailService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -27,6 +30,10 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private final JWTProvider jwtProvider;
+    private final AuthenticationManager authenticationManager;
+
+    private final static int EXPIRE_TIME = 24 * 60 * 60 * 1000;
 
     private final Map<String, Long> codeExpiryTimes = new ConcurrentHashMap<>();
     private final Map<String, String> verificationCodes = new ConcurrentHashMap<>();
@@ -35,36 +42,45 @@ public class AuthServiceImpl implements AuthService {
     private static final Integer EXPIRY_TIME = 60_000;
 
     @Override
-    public ApiResult<String> login(LoginDTO loginDTO, HttpServletRequest request) {
-        String username = loginDTO.getUsername();
-        String password = loginDTO.getPassword();
-
-        Optional<User> optionalUser = userRepository.findByUsername(username);
-
-        if (optionalUser.isEmpty()) {
-            return ApiResult.error("User not found with username: " + username);
-        }
-
-        User user = optionalUser.get();
-
-        if (!passwordEncoder.matches(password, optionalUser.get().getPassword())) {
-            return ApiResult.error("Wrong password");
-        }
-
-        SecurityContext context = SecurityContextHolder.getContext();
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                user,
-                null,
-                user.getAuthorities()
-        );
-
-        context.setAuthentication(usernamePasswordAuthenticationToken);
-        HttpSession session = request.getSession();
-        session.setAttribute("SPRING_SECURITY_CONTEXT", context);
-
-        return ApiResult.success("Login successful");
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
+    @Override
+    public ApiResult<String> signUp(LoginDTO loginDTO) {
+        Optional<User> optionalUser = userRepository.findByUsername(loginDTO.getUsername());
+
+        if (optionalUser.isPresent()) {
+            throw new AccessDeniedException("Username is already in use");
+        }
+
+        User user = new User();
+        user.setUsername(loginDTO.getUsername());
+        user.setPassword(passwordEncoder.encode(loginDTO.getPassword()));
+
+        userRepository.save(user);
+
+        return ApiResult.success("User registered successfully");
+    }
+
+    @Override
+    public ApiResult<String> login(LoginDTO loginDTO) {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginDTO.getUsername(),
+                        loginDTO.getPassword()
+                ));
+
+        User user = (User) authentication.getPrincipal();
+        System.out.println(user.getUsername());
+
+        String token = jwtProvider.generateToken(user);
+
+        return ApiResult.success(token);
+    }
+
+    @Override
     public ApiResult<String> forgetPassword(String email) {
         Optional<User> optionalUser = userRepository.findByUsername(email);
 
@@ -82,11 +98,13 @@ public class AuthServiceImpl implements AuthService {
         return ApiResult.success("Verification code sent successfully to " + email);
     }
 
+    @Override
     public ApiResult<String> verifyResetCode(String email, String code) {
         String storedCode = verificationCodes.get(email);
 
         if (storedCode == null || System.currentTimeMillis() > codeExpiryTimes.getOrDefault(email, 0L)) {
             verificationCodes.remove(email);
+            codeExpiryTimes.remove(email);
             return ApiResult.error("Verification code has expired. Please request a new one.");
         }
 
@@ -99,6 +117,7 @@ public class AuthServiceImpl implements AuthService {
         return ApiResult.success("Verification successful. You can now reset your password.");
     }
 
+    @Override
     @Transactional
     public ApiResult<String> resetPassword(String email, String newPassword) {
         Optional<User> optionalUser = userRepository.findByUsername(email);

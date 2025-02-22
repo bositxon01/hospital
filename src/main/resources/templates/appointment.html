@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Appointment Scheduler</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+<h2>Select Date:</h2>
+<label for="appointmentDate"></label><input type="date" id="appointmentDate" onchange="fetchAvailableSlots()">
+
+<h2>Available Doctors & Time Slots</h2>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Doctor</th>
+        <th>Specialization</th>
+        <th>Available Slots</th>
+    </tr>
+    </thead>
+    <tbody id="slotTable"></tbody>
+</table>
+
+</body>
+<script>
+    async function fetchAvailableSlots() {
+        let selectedDate = document.getElementById("appointmentDate").value;
+        if (!selectedDate) return;
+
+        try {
+            let response = await axios.get(`/api/appointments/available-slots?date=${selectedDate}`);
+            let data = response.data;
+            let tableBody = document.getElementById("slotTable");
+            tableBody.innerHTML = ""; // Clear previous results
+
+            data.forEach(doctor => {
+                let row = `<tr>
+                    <td>${doctor.employeeName}</td>
+                    <td>${doctor.specialization}</td>
+                    <td>${doctor.availableSlots.map(slot =>
+                    `<button onclick="bookAppointment('${doctor.employeeId}', '${slot}')">${slot}</button>`
+                ).join(" ")}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+
+        } catch (error) {
+            console.error("Error fetching slots", error);
+        }
+    }
+
+    async function bookAppointment(employeeId, time) {
+        let selectedDate = document.getElementById("appointmentDate").value;
+        let appointmentTime = `${selectedDate}T${time}`;
+
+        try {
+            await axios.post(`/api/appointments/book`, { employeeId, appointmentTime });
+            alert("Appointment booked successfully!");
+            fetchAvailableSlots(); // Refresh available slots
+        } catch (error) {
+            console.error("Error booking appointment", error);
+        }
+    }
+</script>
+</html>

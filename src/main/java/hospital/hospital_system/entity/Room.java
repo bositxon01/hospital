@@ -22,8 +22,9 @@ public class Room extends AbsIntegerEntity {
     @Value(value = "false")
     private boolean status;
 
-    @OneToOne(mappedBy = "room")
-    private Appointment appointment;
+    @OneToMany(mappedBy = "room")
+    @ToString.Exclude
+    private List<Appointment> appointment;
 
     @OneToMany(mappedBy = "room")
     @ToString.Exclude
