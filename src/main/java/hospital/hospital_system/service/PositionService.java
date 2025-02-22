@@ -3,9 +3,11 @@ package hospital.hospital_system.service;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.PositionDTO;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Transactional
 @Service
 public interface PositionService {
     ApiResult<List<PositionDTO>> getAllPositions();

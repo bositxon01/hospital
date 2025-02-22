@@ -3,7 +3,6 @@ package hospital.hospital_system.controller;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.LoginDTO;
 import hospital.hospital_system.service.AuthService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +15,15 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @PostMapping("/sign-up")
+    public ResponseEntity<ApiResult<String>> signUp(@Valid @RequestBody LoginDTO loginDTO) {
+        ApiResult<String> apiResult = authService.signUp(loginDTO);
+        return ResponseEntity.ok(apiResult);
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<ApiResult<String>> login(@Valid @RequestBody LoginDTO loginDTO,
-                                                   HttpServletRequest request) {
-        ApiResult<String> apiResult = authService.login(loginDTO, request);
+    public ResponseEntity<ApiResult<String>> login(@Valid @RequestBody LoginDTO loginDTO) {
+        ApiResult<String> apiResult = authService.login(loginDTO);
         return ResponseEntity.ok(apiResult);
     }
 

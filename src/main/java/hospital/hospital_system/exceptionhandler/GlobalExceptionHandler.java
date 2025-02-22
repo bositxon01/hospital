@@ -3,6 +3,7 @@ package hospital.hospital_system.exceptionhandler;
 import hospital.hospital_system.payload.ApiResult;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -42,6 +43,15 @@ public class GlobalExceptionHandler {
                 );
 
         return ApiResult.error("Invalid request parameters. Please correct the following errors:", errors);
+    }
+
+    // Handles UsernameNotFoundExceptions
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ApiResult<Map<String, String>> handleUsernameNotFoundExceptions(UsernameNotFoundException exception) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("username", exception.getMessage());
+        return ApiResult.error("Username not found", errors);
     }
 
     // Handles all other runtime exceptions
