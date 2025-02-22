@@ -21,22 +21,11 @@ public class JWTProvider {
     @Value("${jwt.expirationDate}")
     private Integer expirationDate;
 
-    /*public String generateToken(String username, Date expirationDate) {
-        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
-
-        return Jwts.builder()
-                .signWith(key)
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(expirationDate)
-                .compact();
-    }*/
-
     public String generateToken(User user) {
         SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
 
-        // Convert user permissions to a list of strings
-        List<String> permissions = user.getAuthorities().stream()
+        List<String> permissions = user.getAuthorities()
+                .stream()
                 .map(Object::toString)
                 .collect(Collectors.toList());
 
@@ -53,8 +42,7 @@ public class JWTProvider {
         SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
 
         return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
+                .setSigningKey(key).build()
                 .parseClaimsJws(token)
                 .getBody();
     }
