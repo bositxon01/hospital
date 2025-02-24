@@ -4,6 +4,7 @@ import hospital.hospital_system.aop.CheckAuth;
 import hospital.hospital_system.enums.PermissionEnum;
 import hospital.hospital_system.payload.*;
 import hospital.hospital_system.service.EmployeeService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/employee")
+@Tag(name = "Employee API", description = "Employee CRUD API")
 public class EmployeeController {
 
     private final EmployeeService employeeService;

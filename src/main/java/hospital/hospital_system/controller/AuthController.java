@@ -3,6 +3,7 @@ package hospital.hospital_system.controller;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.LoginDTO;
 import hospital.hospital_system.service.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
+@Tag(name = "Authentication API", description = "Authentication CRUD API")
 public class AuthController {
 
     private final AuthService authService;

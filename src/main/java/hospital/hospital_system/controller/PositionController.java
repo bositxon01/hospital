@@ -5,6 +5,7 @@ import hospital.hospital_system.enums.PermissionEnum;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.PositionDTO;
 import hospital.hospital_system.service.PositionService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/position")
 @RequiredArgsConstructor
+@Tag(name = "Position API", description = "Position CRUD API")
 public class PositionController {
     public final PositionService positionService;
 

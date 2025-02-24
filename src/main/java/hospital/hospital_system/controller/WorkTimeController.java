@@ -6,6 +6,7 @@ import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.WorkTimeDTO;
 import hospital.hospital_system.payload.WorkTimeWithIdDTO;
 import hospital.hospital_system.service.WorkTimeService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/work-time")
 @RequiredArgsConstructor
+@Tag(name = "Work-time API", description = "Work-time CRUD API")
 public class WorkTimeController {
     private final WorkTimeService workTimeService;
 

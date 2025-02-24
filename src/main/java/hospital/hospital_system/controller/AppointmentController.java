@@ -5,6 +5,7 @@ import hospital.hospital_system.payload.AppointmentGetDTO;
 import hospital.hospital_system.payload.AppointmentPostDTO;
 import hospital.hospital_system.payload.EmployeeAvailableSlotsDTO;
 import hospital.hospital_system.service.AppointmentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/appointment")
 @RequiredArgsConstructor
+@Tag(name = "Appointment API", description = "Appointment CRUD API")
 public class AppointmentController {
 
     private final AppointmentService appointmentService;

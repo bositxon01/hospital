@@ -5,6 +5,7 @@ import hospital.hospital_system.enums.PermissionEnum;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.TurnDTO;
 import hospital.hospital_system.service.TurnService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/turn")
+@Tag(name = "Turn API", description = "Turn CRUD API")
 public class TurnController {
     private final TurnService turnService;
 
