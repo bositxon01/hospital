@@ -21,6 +21,10 @@ public class JWTProvider {
     @Value("${jwt.expirationDate}")
     private Integer expirationDate;
 
+    private final static int ONE_DAY_IN_MILLISECONDS = 86_400_000;
+
+    protected static final String PERMISSIONS = "permissions";
+
     public String generateToken(User user) {
         SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
 
@@ -32,9 +36,9 @@ public class JWTProvider {
         return Jwts.builder()
                 .signWith(key)
                 .setSubject(user.getUsername())
-                .claim("permissions", permissions) // Permissions are added to token
+                .claim(PERMISSIONS, permissions) // Permissions are added to token
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationDate * 86_400_000))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationDate * ONE_DAY_IN_MILLISECONDS))
                 .compact();
     }
 
@@ -54,7 +58,7 @@ public class JWTProvider {
     public List<String> extractPermissions(String token) {
         Claims claims = extractClaims(token);
 
-        Object permissionsObject = claims.get("permissions");
+        Object permissionsObject = claims.get(PERMISSIONS);
 
         if (permissionsObject instanceof List<?>) {
             return ((List<?>) permissionsObject).stream()

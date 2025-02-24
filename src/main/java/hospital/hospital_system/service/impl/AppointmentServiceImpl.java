@@ -8,7 +8,6 @@ import hospital.hospital_system.payload.AppointmentPostDTO;
 import hospital.hospital_system.payload.EmployeeAvailableSlotsDTO;
 import hospital.hospital_system.repository.*;
 import hospital.hospital_system.service.AppointmentService;
-import hospital.hospital_system.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +31,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final EmployeeRepository employeeRepository;
 
     private final EmployeeRoomRepository employeeRoomRepository;
+
+    private static final int APPOINTMENT_DURATION = 30;
 
     @Override
     public ApiResult<List<AppointmentGetDTO>> getAll() {
@@ -163,7 +164,8 @@ public class AppointmentServiceImpl implements AppointmentService {
             if (!isBooked) {
                 slots.add(formattedTime);
             }
-            slotTime = slotTime.plusMinutes(30); // Each slot is 30 minutes
+
+            slotTime = slotTime.plusMinutes(APPOINTMENT_DURATION); // Each slot is 30 minutes
         }
         return slots;
     }

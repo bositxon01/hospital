@@ -36,8 +36,11 @@ public class PositionServiceImpl implements PositionService {
                                 position.getId(),
                                 position.getName(),
                                 position.getSalary(),
-                                position.getPositionPermissionList()
-                                        .stream().map(PositionPermission::getPermission).toList()
+                                position
+                                        .getPositionPermissionList()
+                                        .stream()
+                                        .map(PositionPermission::getPermission)
+                                        .toList()
                         )
                 ).toList();
 
@@ -79,7 +82,6 @@ public class PositionServiceImpl implements PositionService {
 
         return ApiResult.success("Successfully created position");
     }
-
 
     @Transactional
     @Override

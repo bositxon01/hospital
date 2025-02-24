@@ -23,6 +23,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static hospital.hospital_system.security.JWTProvider.PERMISSIONS;
+import static hospital.hospital_system.utils.AuthConstants.*;
+
 @Component
 @RequiredArgsConstructor
 public class SecurityFilter extends OncePerRequestFilter {
@@ -36,9 +39,9 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String authorization = request.getHeader("Authorization");
+        String authorization = request.getHeader(AUTHORIZATION_HEADER);
 
-        if (authorization != null && authorization.startsWith("Bearer ")) {
+        if (authorization != null && authorization.startsWith(BEARER_PREFIX)) {
 
             String token = authorization.substring(7);
 
@@ -69,7 +72,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         }
 
         // Basic Auth handling
-        else if (Objects.nonNull(authorization) && authorization.startsWith("Basic ")) {
+        else if (Objects.nonNull(authorization) && authorization.startsWith(BASIC_PREFIX)) {
             String basicToken = authorization.substring(6);
 
             String decodedCredentials = new String(Base64.getDecoder().decode(basicToken));
@@ -100,7 +103,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     }
 
     private List<String> extractPermissions(Claims claims) {
-        Object permissionsObject = claims.get("permissions");
+        Object permissionsObject = claims.get(PERMISSIONS);
 
         if (permissionsObject instanceof List<?>) {
             return ((List<?>) permissionsObject).stream()

@@ -4,6 +4,7 @@ import hospital.hospital_system.entity.*;
 import hospital.hospital_system.enums.PermissionEnum;
 import hospital.hospital_system.enums.RoomEnum;
 import hospital.hospital_system.repository.*;
+import hospital.hospital_system.utils.AuthConstants;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import static hospital.hospital_system.utils.AuthConstants.SUPER_ADMIN;
 
 @RequiredArgsConstructor
 @Component
@@ -30,11 +33,11 @@ public class SuperAdminConfig {
 
     @PostConstruct
     public void init() {
-        Position position = positionRepository.findPositionByName("SUPERADMIN")
+        Position position = positionRepository.findPositionByName(SUPER_ADMIN)
                 .orElseGet(
                         () -> {
                             Position onePosition = new Position();
-                            onePosition.setName("SUPERADMIN");
+                            onePosition.setName(SUPER_ADMIN);
                             onePosition.setSalary(10000.9);
                             positionRepository.save(onePosition);
 
@@ -65,10 +68,10 @@ public class SuperAdminConfig {
             LocalDate birthDate = LocalDate.of(1990, 1, 1);
 
             Employee employee = new Employee();
-            employee.setFirstName("SUPERADMIN");
-            employee.setLastName("SUPERADMIN");
+            employee.setFirstName(SUPER_ADMIN);
+            employee.setLastName(SUPER_ADMIN);
             employee.setDateOfBirth(birthDate);
-            employee.setSpecialization("SUPERADMIN");
+            employee.setSpecialization(SUPER_ADMIN);
             employee.setUser(user);
             employeeRepository.save(employee);
             roomInit();
