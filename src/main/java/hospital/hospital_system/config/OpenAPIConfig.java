@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
-        info = @Info(title = "My API", version = "1.0", description = "My API Documentation"),
+        info = @Info(title = "Hospital System API", version = "v1.0.0", description = "This API is created for Hospital System"),
         security = @SecurityRequirement(name = "bearerAuth")
 )
 @SecurityScheme(

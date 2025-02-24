@@ -73,9 +73,11 @@ public class AuthServiceImpl implements AuthService {
                 ));
 
         User user = (User) authentication.getPrincipal();
-        System.out.println(user.getUsername());
+        System.out.println("user.getUsername() = " + user.getUsername());
 
         String token = jwtProvider.generateToken(user);
+
+        System.out.println("token = " + token);
 
         return ApiResult.success(token);
     }
