@@ -49,23 +49,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ApiResult<String> signUp(LoginDTO loginDTO) {
-        Optional<User> optionalUser = userRepository.findByUsername(loginDTO.getUsername());
-
-        if (optionalUser.isPresent()) {
-            throw new AccessDeniedException("Username is already in use");
-        }
-
-        User user = new User();
-        user.setUsername(loginDTO.getUsername());
-        user.setPassword(passwordEncoder.encode(loginDTO.getPassword()));
-
-        userRepository.save(user);
-
-        return ApiResult.success("User registered successfully");
-    }
-
-    @Override
     public ApiResult<String> login(LoginDTO loginDTO) {
 
         Authentication authentication = authenticationManager.authenticate(
