@@ -18,9 +18,10 @@ public class AppointmentResult extends AbsIntegerEntity {
     private Appointment appointment;
 
     @NotBlank
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "text")
     private String diagnosis;
 
+    @Column(columnDefinition = "text")
     private String medicine;
 
     @OneToOne
