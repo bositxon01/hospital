@@ -19,14 +19,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EmployeeRoomServiceImpl implements EmployeeRoomService {
     private final EmployeeRoomRepository employeeRoomRepository;
+
     private final RoomRepository roomRepository;
+
     private final EmployeeRepository employeeRepository;
 
     @Override
     public ApiResult<List<EmployeeRoomDTO>> getAllEmployeeRooms() {
-        List<EmployeeRoomDTO> employeeRoomDTOs = employeeRoomRepository.findAll().stream()
+        List<EmployeeRoomDTO> employeeRoomDTOs = employeeRoomRepository.findAll()
+                .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+
         return ApiResult.success(employeeRoomDTOs);
     }
 

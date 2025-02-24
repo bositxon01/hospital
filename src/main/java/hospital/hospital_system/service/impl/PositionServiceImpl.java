@@ -20,6 +20,7 @@ import java.util.Optional;
 @Transactional
 public class PositionServiceImpl implements PositionService {
     private final PositionRepository positionRepository;
+
     private final PositionPermissionRepository positionPermissionRepository;
 
     @Override
@@ -30,13 +31,13 @@ public class PositionServiceImpl implements PositionService {
             return ApiResult.success("No positions found");
         }
 
-
         List<PositionDTO> positionDTOList = allPosition.stream()
                 .map(position -> new PositionDTO(
                                 position.getId(),
                                 position.getName(),
                                 position.getSalary(),
-                                position.getPositionPermissionList().stream().map(PositionPermission::getPermission).toList()
+                                position.getPositionPermissionList()
+                                        .stream().map(PositionPermission::getPermission).toList()
                         )
                 ).toList();
 
@@ -108,7 +109,6 @@ public class PositionServiceImpl implements PositionService {
         }
         return ApiResult.success("Successfully updated position");
     }
-
 
     @Transactional
     @Override

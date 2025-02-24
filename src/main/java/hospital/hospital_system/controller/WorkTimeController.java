@@ -5,7 +5,6 @@ import hospital.hospital_system.enums.PermissionEnum;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.WorkTimeDTO;
 import hospital.hospital_system.payload.WorkTimeWithIdDTO;
-import hospital.hospital_system.repository.WorkTimeRepository;
 import hospital.hospital_system.service.WorkTimeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

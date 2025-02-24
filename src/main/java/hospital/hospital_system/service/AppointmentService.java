@@ -1,23 +1,21 @@
 package hospital.hospital_system.service;
 
 import hospital.hospital_system.payload.ApiResult;
-import hospital.hospital_system.payload.AppointmentGetDto;
-import hospital.hospital_system.payload.AppointmentPostDto;
-import hospital.hospital_system.payload.EmployeeAvailableSlotsDto;
-import org.springframework.stereotype.Service;
+import hospital.hospital_system.payload.AppointmentGetDTO;
+import hospital.hospital_system.payload.AppointmentPostDTO;
+import hospital.hospital_system.payload.EmployeeAvailableSlotsDTO;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Service
 public interface AppointmentService {
 
-    ApiResult<List<AppointmentGetDto>> getAll();
+    ApiResult<List<AppointmentGetDTO>> getAll();
 
-    ApiResult<AppointmentGetDto> get(Integer id);
+    ApiResult<AppointmentGetDTO> get(Integer id);
 
-    ApiResult<AppointmentGetDto> save(AppointmentPostDto appointmentPostDto);
+    ApiResult<AppointmentGetDTO> save(AppointmentPostDTO appointmentPostDto);
 
-    List<EmployeeAvailableSlotsDto> getAvailableSlots(LocalDate date);
+    List<EmployeeAvailableSlotsDTO> getAvailableSlots(LocalDate date);
 
 }

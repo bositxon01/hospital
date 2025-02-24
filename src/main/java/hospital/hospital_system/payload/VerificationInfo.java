@@ -11,8 +11,12 @@ import lombok.NoArgsConstructor;
 @Data
 public class VerificationInfo {
     private String code;
+
     private User user;
+
     private Employee employee;
+
     private long expiryTime;
+
     private int attempts;
 }

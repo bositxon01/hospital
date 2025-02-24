@@ -3,9 +3,9 @@ package hospital.hospital_system.service.impl;
 import hospital.hospital_system.entity.*;
 import hospital.hospital_system.enums.DayEnum;
 import hospital.hospital_system.payload.ApiResult;
-import hospital.hospital_system.payload.AppointmentGetDto;
-import hospital.hospital_system.payload.AppointmentPostDto;
-import hospital.hospital_system.payload.EmployeeAvailableSlotsDto;
+import hospital.hospital_system.payload.AppointmentGetDTO;
+import hospital.hospital_system.payload.AppointmentPostDTO;
+import hospital.hospital_system.payload.EmployeeAvailableSlotsDTO;
 import hospital.hospital_system.repository.*;
 import hospital.hospital_system.service.AppointmentService;
 import hospital.hospital_system.service.EmployeeService;
@@ -24,38 +24,40 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AppointmentServiceImpl implements AppointmentService {
     private final AppointmentRepository appointmentRepository;
+
     private final PatientRepository patientRepository;
+
     private final WorkTimeRepository workTimeRepository;
-    private final EmployeeService employeeService;
+
     private final EmployeeRepository employeeRepository;
+
     private final EmployeeRoomRepository employeeRoomRepository;
 
     @Override
-    public ApiResult<List<AppointmentGetDto>> getAll() {
+    public ApiResult<List<AppointmentGetDTO>> getAll() {
         List<Appointment> appointments = appointmentRepository.findAll();
         if (appointments.isEmpty()) {
             return ApiResult.success("No appointments found");
         }
-        List<AppointmentGetDto> appointmentGetDtos = appointments.stream()
+        List<AppointmentGetDTO> appointmentGetDTOS = appointments.stream()
                 .map(this::getAppointmentDto)
                 .toList();
-        return ApiResult.success(appointmentGetDtos);
+        return ApiResult.success(appointmentGetDTOS);
     }
 
     @Override
-    public ApiResult<AppointmentGetDto> get(Integer id) {
+    public ApiResult<AppointmentGetDTO> get(Integer id) {
         Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
         if (optionalAppointment.isEmpty()) {
             return ApiResult.error("Appointment not found with id " + id);
         }
         Appointment appointment = optionalAppointment.get();
-        AppointmentGetDto appointmentDto = getAppointmentDto(appointment);
+        AppointmentGetDTO appointmentDto = getAppointmentDto(appointment);
         return ApiResult.success(appointmentDto);
     }
 
-
     @Override
-    public ApiResult<AppointmentGetDto> save(AppointmentPostDto appointmentPostDto) {
+    public ApiResult<AppointmentGetDTO> save(AppointmentPostDTO appointmentPostDto) {
         // Check if the patient exists
         Optional<Patient> optionalPatient = patientRepository.findById(appointmentPostDto.getPatientId());
         if (optionalPatient.isEmpty()) {
@@ -75,8 +77,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         LocalTime appointmentTime = appointmentPostDto.getAppointmentTime().toLocalTime();
 
         // Fetch employee's available slots for the given date
-        List<EmployeeAvailableSlotsDto> availableSlotsList = getAvailableSlots(appointmentDate);
-        Optional<EmployeeAvailableSlotsDto> employeeSlots = availableSlotsList.stream()
+        List<EmployeeAvailableSlotsDTO> availableSlotsList = getAvailableSlots(appointmentDate);
+        Optional<EmployeeAvailableSlotsDTO> employeeSlots = availableSlotsList.stream()
                 .filter(slot -> slot.getEmployeeId().equals(employee.getId()))
                 .findFirst();
 
@@ -112,9 +114,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<EmployeeAvailableSlotsDto> getAvailableSlots(LocalDate date) {
+    public List<EmployeeAvailableSlotsDTO> getAvailableSlots(LocalDate date) {
         List<Employee> employees = employeeRepository.findAll();
-        List<EmployeeAvailableSlotsDto> result = new ArrayList<>();
+        List<EmployeeAvailableSlotsDTO> result = new ArrayList<>();
 
         for (Employee employee : employees) {
 
@@ -131,7 +133,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 List<String> availableSlots = generateAvailableSlots(turn.getStartTime(), turn.getEndTime(), bookedAppointmentTimes);
 
                 if (!availableSlots.isEmpty()) {
-                    result.add(new EmployeeAvailableSlotsDto(
+                    result.add(new EmployeeAvailableSlotsDTO(
                             employee.getId(),
                             employee.getFirstName() + " " + employee.getLastName(),
                             employee.getSpecialization(),
@@ -166,13 +168,15 @@ public class AppointmentServiceImpl implements AppointmentService {
         return slots;
     }
 
-    private AppointmentGetDto getAppointmentDto(Appointment appointment) {
-        AppointmentGetDto appointmentGetDto = new AppointmentGetDto();
+    private AppointmentGetDTO getAppointmentDto(Appointment appointment) {
+        AppointmentGetDTO appointmentGetDto = new AppointmentGetDTO();
+
         appointmentGetDto.setId(appointment.getId());
         appointmentGetDto.setPatientId(appointment.getPatient().getId());
         appointmentGetDto.setEmployeeId(appointment.getEmployee().getId());
         appointmentGetDto.setRoomId(appointment.getRoom().getId());
         appointmentGetDto.setAppointmentTime(appointment.getAppointmentTime());
+
         AppointmentResult appointmentResult = appointment.getAppointmentResult();
         if (appointmentResult != null) {
             appointmentGetDto.setAppointmentResultId(appointmentResult.getId());

@@ -19,7 +19,8 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public ApiResult<List<RoomDTO>> getAllRooms() {
-        List<RoomDTO> rooms = roomRepository.findAll().stream()
+        List<RoomDTO> rooms = roomRepository.findAll()
+                .stream()
                 .map(room -> new RoomDTO(room.getId(), room.getName(), room.isStatus()))
                 .collect(Collectors.toList());
         return ApiResult.success(rooms);

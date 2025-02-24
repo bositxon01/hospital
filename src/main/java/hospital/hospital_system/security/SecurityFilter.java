@@ -27,18 +27,23 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SecurityFilter extends OncePerRequestFilter {
     private final JWTProvider jwtProvider;
+
     private final PasswordEncoder passwordEncoder;
+
     private final AuthService authService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
 
         if (authorization != null && authorization.startsWith("Bearer ")) {
 
             String token = authorization.substring(7);
+
             Claims claims = jwtProvider.extractClaims(token);
+
             String username = claims.getSubject();
 
             List<String> permissions = extractPermissions(claims);
@@ -48,21 +53,27 @@ public class SecurityFilter extends OncePerRequestFilter {
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
 
-                List<SimpleGrantedAuthority> authorities = permissions.stream().map(SimpleGrantedAuthority::new).toList();
+                List<SimpleGrantedAuthority> authorities = permissions.stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .toList();
 
-                UsernamePasswordAuthenticationToken authentication =
+                var authentication =
                         new UsernamePasswordAuthenticationToken(user, null, authorities);
 
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                authentication.setDetails(new WebAuthenticationDetailsSource()
+                        .buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authentication);
             }
         }
 
         // Basic Auth handling
         else if (Objects.nonNull(authorization) && authorization.startsWith("Basic ")) {
             String basicToken = authorization.substring(6);
+
             String decodedCredentials = new String(Base64.getDecoder().decode(basicToken));
+
             String[] credentials = decodedCredentials.split(":");
 
             if (credentials.length == 2) {
@@ -75,10 +86,11 @@ public class SecurityFilter extends OncePerRequestFilter {
                     User user = optionalUser.get();
 
                     if (passwordEncoder.matches(password, user.getPassword())) {
-                        UsernamePasswordAuthenticationToken authentication =
+                        var authentication =
                                 new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                        SecurityContextHolder.getContext()
+                                .setAuthentication(authentication);
                     }
                 }
             }

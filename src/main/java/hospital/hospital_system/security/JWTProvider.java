@@ -32,7 +32,7 @@ public class JWTProvider {
         return Jwts.builder()
                 .signWith(key)
                 .setSubject(user.getUsername())
-                .claim("permissions", permissions) // Add permissions to token
+                .claim("permissions", permissions) // Permissions are added to token
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationDate * 86_400_000))
                 .compact();

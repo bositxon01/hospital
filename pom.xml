@@ -29,6 +29,7 @@
     <properties>
         <java.version>17</java.version>
         <jwt.version>0.11.5</jwt.version>
+        <springdoc.version>2.8.4</springdoc.version>
     </properties>
     <dependencies>
         <dependency>
@@ -84,16 +85,15 @@
             <version>${jwt.version}</version>
         </dependency>
 
-
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
-            <version>2.8.4</version>
+            <version>${springdoc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.8.4</version>
+            <version>${springdoc.version}</version>
         </dependency>
 
     </dependencies>

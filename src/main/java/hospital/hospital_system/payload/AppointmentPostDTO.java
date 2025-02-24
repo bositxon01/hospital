@@ -1,17 +1,16 @@
 package hospital.hospital_system.payload;
 
-import hospital.hospital_system.enums.DayEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class WorkTimeDTO {
-    private EmployeeDTO employeeDTO;
-
-    private DayEnum day;
-
-    private TurnDTO turnDTO;
+public class AppointmentPostDTO {
+    private Integer patientId;
+    private Integer employeeId;
+    private LocalDateTime appointmentTime;
 }

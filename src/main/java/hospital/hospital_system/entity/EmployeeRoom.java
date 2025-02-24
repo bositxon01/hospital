@@ -1,6 +1,7 @@
 package hospital.hospital_system.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 
 @AllArgsConstructor

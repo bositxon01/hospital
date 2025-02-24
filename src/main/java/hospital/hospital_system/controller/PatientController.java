@@ -4,7 +4,6 @@ import hospital.hospital_system.aop.CheckAuth;
 import hospital.hospital_system.enums.PermissionEnum;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.PatientDTO;
-import hospital.hospital_system.payload.PositionDTO;
 import hospital.hospital_system.service.PatientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,28 +18,28 @@ import java.util.List;
 public class PatientController {
     public final PatientService patientService;
 
-    //@CheckAuth(permissions = PermissionEnum.VIEW_PATIENT)
+    @CheckAuth(permissions = PermissionEnum.VIEW_PATIENT)
     @GetMapping
     public ResponseEntity<ApiResult<List<PatientDTO>>> getAllPatients() {
         ApiResult<List<PatientDTO>> allPatients = patientService.getAllPatients();
         return ResponseEntity.ok(allPatients);
     }
 
-   // @CheckAuth(permissions = PermissionEnum.VIEW_PATIENT)
+    @CheckAuth(permissions = PermissionEnum.VIEW_PATIENT)
     @GetMapping("/{id}")
     public ResponseEntity<ApiResult<PatientDTO>> getPatient(@PathVariable Integer id) {
         ApiResult<PatientDTO> patientDTO = patientService.getPatient(id);
         return ResponseEntity.ok(patientDTO);
     }
 
-    //@CheckAuth(permissions = PermissionEnum.CREATE_PATIENT)
+    @CheckAuth(permissions = PermissionEnum.CREATE_PATIENT)
     @PostMapping("/create")
     public ResponseEntity<ApiResult<PatientDTO>> createPatient(@Valid @RequestBody PatientDTO patientDTO) {
         ApiResult<PatientDTO> patientDTOApiResult = patientService.create(patientDTO);
         return ResponseEntity.ok(patientDTOApiResult);
     }
 
-   // @CheckAuth(permissions = PermissionEnum.DELETE_PATIENT)
+    @CheckAuth(permissions = PermissionEnum.DELETE_PATIENT)
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResult<PatientDTO>> deletePatient(@PathVariable Integer id) {
         ApiResult<PatientDTO> patientDTOApiResult = patientService.delete(id);

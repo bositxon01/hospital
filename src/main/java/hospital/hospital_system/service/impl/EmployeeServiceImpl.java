@@ -19,18 +19,21 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-
 @Service
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-    private final UserRepository userRepository;
-    private final AttachmentRepository attachmentRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final PositionRepository positionRepository;
-    private final EmailService emailService;
 
+    private final UserRepository userRepository;
+
+    private final AttachmentRepository attachmentRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private final PositionRepository positionRepository;
+
+    private final EmailService emailService;
 
     private final Map<String, VerificationInfo> verificationData = new ConcurrentHashMap<>();
 
@@ -41,8 +44,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<Employee> employees = employeeRepository.findAll();
 
         List<EmployeeGetDTO> list = employees.stream()
-                .map(this::getEmployeeGetDTO
-                ).toList();
+                .map(this::getEmployeeGetDTO).toList();
         return ApiResult.success(list);
     }
 
@@ -109,7 +111,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         verificationData.put(userEmail, verificationInfo);
 
-
         emailService.sendVerificationEmail(userEmail, verificationCode);
 
         // frontda boshqa page ochilib code  kiritadi
@@ -119,7 +120,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
-    public ApiResult<EmployeeAndUserDTO> updateEmployee(Integer id, EmployeeUpdateDto employeeDTO) {
+    public ApiResult<EmployeeAndUserDTO> updateEmployee(Integer id, EmployeeUpdateDTO employeeDTO) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
         Optional<Position> positionById = positionRepository.findPositionById(employeeDTO.getPositionId());
 
@@ -172,7 +173,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             verificationData.remove(email);
             return ApiResult.error("The verification code has expired. Please request a new one.");
         }
-
 
         // Noto‘g‘ri kod kiritilgan holat
         if (!code.equals(verificationInfo.getCode())) {
@@ -235,7 +235,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeGetDTO.setSalary(employee.getUser().getPosition().getSalary());
         return employeeGetDTO;
     }
-
 
     private static String getVerificationCode() {
         return String.valueOf(new Random().nextInt(100000, 999999));

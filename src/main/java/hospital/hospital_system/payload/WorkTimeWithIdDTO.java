@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class WorkTimeWithIdDTO {
     private Integer employee_id;
+
     private DayEnum day;
+
     private Integer turn_id;
 }

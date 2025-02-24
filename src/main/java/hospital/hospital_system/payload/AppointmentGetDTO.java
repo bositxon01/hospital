@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class AppointmentGetDto {
+public class AppointmentGetDTO {
     private Integer id;
     private Integer employeeId;
     private Integer patientId;

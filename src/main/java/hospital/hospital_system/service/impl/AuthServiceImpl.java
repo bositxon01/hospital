@@ -18,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -28,12 +27,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
-    private final EmailService emailService;
-    private final PasswordEncoder passwordEncoder;
-    private final JWTProvider jwtProvider;
-    private final AuthenticationManager authenticationManager;
 
-    private final static int EXPIRE_TIME = 24 * 60 * 60 * 1000;
+    private final EmailService emailService;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private final JWTProvider jwtProvider;
+
+    private final AuthenticationManager authenticationManager;
 
     private final Map<String, Long> codeExpiryTimes = new ConcurrentHashMap<>();
     private final Map<String, String> verificationCodes = new ConcurrentHashMap<>();
@@ -43,7 +44,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
     @Override
@@ -104,9 +106,12 @@ public class AuthServiceImpl implements AuthService {
     public ApiResult<String> verifyResetCode(String email, String code) {
         String storedCode = verificationCodes.get(email);
 
-        if (storedCode == null || System.currentTimeMillis() > codeExpiryTimes.getOrDefault(email, 0L)) {
+        if (storedCode == null ||
+                System.currentTimeMillis() > codeExpiryTimes.getOrDefault(email, 0L)) {
+
             verificationCodes.remove(email);
             codeExpiryTimes.remove(email);
+
             return ApiResult.error("Verification code has expired. Please request a new one.");
         }
 

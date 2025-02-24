@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class EmployeeAttachmentDto {
     @NotNull(message = "Employee id can not be null")
     private Integer employeeId;
+
     @NotNull(message = "Attachment id can not be null")
     private Integer attachmentId;
 }

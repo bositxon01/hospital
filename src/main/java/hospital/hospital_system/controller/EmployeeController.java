@@ -32,14 +32,12 @@ public class EmployeeController {
 
     }
 
-
     @CheckAuth(permissions = PermissionEnum.CREATE_EMPLOYEE)
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody EmployeeAndUserDTO employeeDTO) {
         ApiResult<EmployeeAndUserDTO> employee = employeeService.createEmployee(employeeDTO);
         return ResponseEntity.ok(employee);
     }
-
 
     @CheckAuth(permissions = PermissionEnum.CREATE_EMPLOYEE)
     @PostMapping("/verify")
@@ -51,7 +49,7 @@ public class EmployeeController {
     @CheckAuth(permissions = PermissionEnum.EDIT_EMPLOYEE)
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Integer id,
-                                    @RequestBody EmployeeUpdateDto employeeDTO) {
+                                    @RequestBody EmployeeUpdateDTO employeeDTO) {
         ApiResult<EmployeeAndUserDTO> updateEmployee = employeeService.updateEmployee(id, employeeDTO);
         return ResponseEntity.ok(updateEmployee);
     }

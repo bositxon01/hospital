@@ -42,7 +42,7 @@ public class TurnController {
     @CheckAuth(permissions = PermissionEnum.EDIT_TURN)
     @PutMapping("/{id}")
     public ResponseEntity<ApiResult<String>> updateTurn(@PathVariable Integer id,
-                                        @Valid @RequestBody TurnDTO turnDTO) {
+                                                        @Valid @RequestBody TurnDTO turnDTO) {
         ApiResult<String> apiResult = turnService.update(id, turnDTO);
         return ResponseEntity.ok(apiResult);
     }

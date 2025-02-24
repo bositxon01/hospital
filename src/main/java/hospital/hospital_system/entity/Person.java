@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @MappedSuperclass
-public class Person extends AbsIntegerEntity {
+public abstract class Person extends AbsIntegerEntity {
 
     @NotBlank(message = "Firstname cannot be blank")
     @Column(nullable = false)

@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class AttachmentDTO implements Serializable {
 
     private Integer id;

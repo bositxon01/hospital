@@ -12,14 +12,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class WorkTimeServiceImpl implements WorkTimeService {
     private final WorkTimeRepository workTimeRepository;
+
     private final EmployeeRepository employeeRepository;
+
     private final TurnRepository turnRepository;
 
     @Override
@@ -48,7 +49,8 @@ public class WorkTimeServiceImpl implements WorkTimeService {
         );
 
         if (existsByEmployeeIdAndTurnIdAndDay) {
-            return ApiResult.error("Employee already exists with id: " + employee.getId() + " and turn id: " + turn.getId());
+            return ApiResult.error("Employee already exists with id: " + employee.getId()
+                    + " and turn id: " + turn.getId());
         }
 
         WorkTime workTime = new WorkTime();
@@ -75,20 +77,24 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 
                     Turn turn = workTime.getTurn();
 
+                    EmployeeDTO employeeDTO = new EmployeeDTO(
+                            employee.getId(),
+                            employee.getFirstName(),
+                            employee.getLastName(),
+                            employee.getDateOfBirth(),
+                            employee.getSpecialization());
+
+                    TurnDTO turnDTO = new TurnDTO(
+                            turn.getId(),
+                            turn.getName(),
+                            turn.getStartTime(),
+                            turn.getEndTime()
+                    );
+
                     return new WorkTimeDTO(
-                            new EmployeeDTO(
-                                    employee.getId(),
-                                    employee.getFirstName(),
-                                    employee.getLastName(),
-                                    employee.getDateOfBirth(),
-                                    employee.getSpecialization()),
+                            employeeDTO,
                             workTime.getDay(),
-                            new TurnDTO(
-                                    turn.getId(),
-                                    turn.getName(),
-                                    turn.getStartTime(),
-                                    turn.getEndTime()
-                            )
+                            turnDTO
                     );
                 }).toList();
 
@@ -109,20 +115,24 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 
         Turn turn = workTime.getTurn();
 
+        EmployeeDTO employeeDTO = new EmployeeDTO(
+                employee.getId(),
+                employee.getFirstName(),
+                employee.getLastName(),
+                employee.getDateOfBirth(),
+                employee.getSpecialization());
+
+        TurnDTO turnDTO = new TurnDTO(
+                turn.getId(),
+                turn.getName(),
+                turn.getStartTime(),
+                turn.getEndTime()
+        );
+
         WorkTimeDTO workTimeDTO = new WorkTimeDTO(
-                new EmployeeDTO(
-                        employee.getId(),
-                        employee.getFirstName(),
-                        employee.getLastName(),
-                        employee.getDateOfBirth(),
-                        employee.getSpecialization()),
+                employeeDTO,
                 workTime.getDay(),
-                new TurnDTO(
-                        turn.getId(),
-                        turn.getName(),
-                        turn.getStartTime(),
-                        turn.getEndTime()
-                )
+                turnDTO
         );
 
         return ApiResult.success(workTimeDTO);

@@ -1,6 +1,5 @@
 package hospital.hospital_system.payload;
 
-
 import lombok.*;
 
 @AllArgsConstructor
@@ -8,11 +7,10 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-
 public class EmployeeRoomDTO {
-
     private Integer id;
-    private Integer employeeId;
-    private Integer roomId;
 
+    private Integer employeeId;
+
+    private Integer roomId;
 }

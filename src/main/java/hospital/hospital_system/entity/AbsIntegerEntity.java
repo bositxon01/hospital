@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @MappedSuperclass
-public class AbsIntegerEntity {
+public abstract class AbsIntegerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
