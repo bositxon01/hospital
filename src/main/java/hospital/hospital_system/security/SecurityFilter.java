@@ -8,7 +8,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMessage;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,7 +27,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static hospital.hospital_system.security.JWTProvider.PERMISSIONS;
-import static hospital.hospital_system.utils.AuthConstants.*;
+import static hospital.hospital_system.utils.AuthConstants.BASIC_PREFIX;
+import static hospital.hospital_system.utils.AuthConstants.BEARER_PREFIX;
 
 @Component
 @RequiredArgsConstructor
@@ -39,7 +43,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String authorization = request.getHeader(AUTHORIZATION_HEADER);
+        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (authorization != null && authorization.startsWith(BEARER_PREFIX)) {
 

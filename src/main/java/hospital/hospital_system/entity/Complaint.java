@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,6 +15,9 @@ import lombok.*;
 @Setter
 @ToString
 @Entity
+
+@SQLRestriction(value = "deleted=false")
+@SQLDelete(sql = ("UPDATE complaint SET deleted=true WHERE id=?"))
 public class Complaint extends AbsIntegerEntity {
 
     @NotBlank

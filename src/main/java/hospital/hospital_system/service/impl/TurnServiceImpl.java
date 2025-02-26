@@ -19,8 +19,13 @@ public class TurnServiceImpl implements TurnService {
     private final TurnRepository turnRepository;
 
     @Override
-    public ApiResult<String> create(TurnDTO turnDTO) {
+    public ApiResult<TurnDTO> createTurn(TurnDTO turnDTO) {
         TurnEnum name = turnDTO.getName();
+
+        if (turnRepository.existsByNameAndDeletedFalse(name)) {
+            return ApiResult.error("Turn name already exists with " + name);
+        }
+
         LocalTime startTime = turnDTO.getStartTime();
         LocalTime endTime = turnDTO.getEndTime();
 
@@ -30,12 +35,13 @@ public class TurnServiceImpl implements TurnService {
         turn.setEndTime(endTime);
 
         turnRepository.save(turn);
+        turnDTO.setId(turn.getId());
 
-        return ApiResult.success("Turn created successfully");
+        return ApiResult.success("Turn created successfully", turnDTO);
     }
 
     @Override
-    public ApiResult<List<TurnDTO>> getAll() {
+    public ApiResult<List<TurnDTO>> getAllTurns() {
         List<Turn> turnList = turnRepository.findAll();
 
         if (turnList.isEmpty()) {
@@ -55,7 +61,7 @@ public class TurnServiceImpl implements TurnService {
     }
 
     @Override
-    public ApiResult<TurnDTO> getById(int id) {
+    public ApiResult<TurnDTO> getTurnById(int id) {
         Optional<Turn> optionalTurn = turnRepository.findById(id);
 
         if (optionalTurn.isEmpty()) {
@@ -69,7 +75,7 @@ public class TurnServiceImpl implements TurnService {
     }
 
     @Override
-    public ApiResult<String> update(Integer id, TurnDTO turnDTO) {
+    public ApiResult<TurnDTO> updateTurn(Integer id, TurnDTO turnDTO) {
         Optional<Turn> optionalTurn = turnRepository.findById(id);
         if (optionalTurn.isEmpty()) {
             return ApiResult.error("Turn not found with id " + id);
@@ -81,17 +87,22 @@ public class TurnServiceImpl implements TurnService {
         turn.setEndTime(turnDTO.getEndTime());
         turnRepository.save(turn);
 
-        return ApiResult.success("Turn updated successfully");
+        turnDTO.setId(turn.getId());
+
+        return ApiResult.success("Turn updated successfully", turnDTO);
     }
 
     @Override
-    public ApiResult<String> delete(int id) {
+    public ApiResult<String> deleteTurn(int id) {
         Optional<Turn> optionalTurn = turnRepository.findById(id);
+
         if (optionalTurn.isEmpty()) {
             return ApiResult.error("Turn not found with id " + id);
         }
+
         Turn turn = optionalTurn.get();
-        turnRepository.delete(turn);
+        turn.setDeleted(true);
+        turnRepository.save(turn);
 
         return ApiResult.success("Turn deleted successfully");
     }

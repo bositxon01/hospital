@@ -13,6 +13,7 @@ import java.util.List;
 public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
     List<Appointment> findAllByAppointmentTime(Timestamp appointmentTime);
 
-    @Query("SELECT a FROM Appointment a WHERE a.employee.id = :doctorId AND DATE(a.appointmentTime) = DATE(:date)")
-    List<Appointment> findByEmployeeAndAppointmentTime_Date(@Param("doctorId") Integer doctorId, @Param("date") Timestamp date);
+    @Query("SELECT a FROM Appointment a WHERE a.employee.id = :doctorId AND DATE(a.appointmentTime) = DATE(:date) AND a.deleted = FALSE")
+    List<Appointment> findByEmployeeAndAppointmentTime_DateAndDeletedFalse(@Param("doctorId") Integer doctorId, @Param("date") Timestamp date);
+
 }

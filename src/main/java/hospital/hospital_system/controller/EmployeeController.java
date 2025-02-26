@@ -65,8 +65,8 @@ public class EmployeeController {
 
     @CheckAuth(permissions = PermissionEnum.DELETE_EMPLOYEE)
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Integer id) {
-        ApiResult<EmployeeAndUserDTO> deleteEmployee = employeeService.deleteEmployee(id);
+    public ResponseEntity<ApiResult<String>> delete(@PathVariable Integer id) {
+        ApiResult<String> deleteEmployee = employeeService.deleteEmployee(id);
         return ResponseEntity.ok(deleteEmployee);
     }
 

@@ -37,14 +37,14 @@ public class PatientController {
     @CheckAuth(permissions = PermissionEnum.CREATE_PATIENT)
     @PostMapping("/create")
     public ResponseEntity<ApiResult<PatientDTO>> createPatient(@Valid @RequestBody PatientDTO patientDTO) {
-        ApiResult<PatientDTO> patientDTOApiResult = patientService.create(patientDTO);
+        ApiResult<PatientDTO> patientDTOApiResult = patientService.createPatient(patientDTO);
         return ResponseEntity.ok(patientDTOApiResult);
     }
 
     @CheckAuth(permissions = PermissionEnum.DELETE_PATIENT)
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResult<PatientDTO>> deletePatient(@PathVariable Integer id) {
-        ApiResult<PatientDTO> patientDTOApiResult = patientService.delete(id);
+        ApiResult<PatientDTO> patientDTOApiResult = patientService.deletePatient(id);
         return ResponseEntity.ok(patientDTOApiResult);
     }
 }

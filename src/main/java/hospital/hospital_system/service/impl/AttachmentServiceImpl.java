@@ -82,7 +82,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     public ApiResult<AttachmentDTO> getAttachmentById(Integer id) {
-        Optional<Attachment> optionalAttachment = attachmentRepository.findAttachmentById(id);
+        Optional<Attachment> optionalAttachment = attachmentRepository.findAttachmentByIdAndDeletedFalse(id);
         if (optionalAttachment.isEmpty()) {
             return ApiResult.error("Attachment not found with id: " + id);
         }
@@ -92,7 +92,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     public ApiResult<String> deleteAttachment(Integer id) {
-        Optional<Attachment> optionalAttachment = attachmentRepository.findAttachmentById(id);
+        Optional<Attachment> optionalAttachment = attachmentRepository.findAttachmentByIdAndDeletedFalse(id);
 
         if (optionalAttachment.isEmpty()) {
             return ApiResult.error("Attachment not found with id: " + id);
@@ -106,7 +106,9 @@ public class AttachmentServiceImpl implements AttachmentService {
             return ApiResult.error("Error occurred while deleting attachment: " + e.getMessage());
         }
 
-        attachmentRepository.delete(attachment);
+        attachment.setDeleted(true);
+        attachmentRepository.save(attachment);
+
         return ApiResult.success("Attachment deleted successfully");
     }
 }

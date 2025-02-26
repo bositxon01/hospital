@@ -20,7 +20,7 @@ public class DBUserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.findByUsername(username);
+        Optional<User> optionalUser = userRepository.findByUsernameAndDeletedFalse(username);
         if (optionalUser.isEmpty()) {
             throw new UsernameNotFoundException(username);
         }

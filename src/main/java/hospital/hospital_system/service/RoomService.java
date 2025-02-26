@@ -10,9 +10,9 @@ public interface RoomService {
 
     ApiResult<RoomDTO> getRoom(Integer id);
 
-    ApiResult<RoomDTO> create(RoomDTO roomDTO);
+    ApiResult<RoomDTO> createRoom(RoomDTO roomDTO);
 
-    ApiResult<RoomDTO> update(Integer id, RoomDTO roomDTO);
+    ApiResult<RoomDTO> updateRoom(Integer id, RoomDTO roomDTO);
 
-    ApiResult<RoomDTO> delete(Integer id);
+    ApiResult<RoomDTO> deleteRoom(Integer id);
 }

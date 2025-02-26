@@ -7,6 +7,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
 
@@ -16,6 +18,9 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
+
+@SQLRestriction(value = "deleted=false")
+@SQLDelete(sql = ("UPDATE employee SET deleted=true WHERE id=?"))
 public class Employee extends Person {
 
     @ToString.Exclude

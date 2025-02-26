@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface EmployeeRoomRepository extends JpaRepository<EmployeeRoom, Integer> {
-    Optional<EmployeeRoom> findEmployeeRoomByEmployeeId(Integer employeeId);
+    Optional<EmployeeRoom> findEmployeeRoomByEmployeeIdAndDeletedFalse(Integer employeeId);
 }

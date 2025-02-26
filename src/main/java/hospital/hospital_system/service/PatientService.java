@@ -10,7 +10,7 @@ public interface PatientService {
 
     ApiResult<PatientDTO> getPatient(Integer id);
 
-    ApiResult<PatientDTO> create(PatientDTO patientDTO);
+    ApiResult<PatientDTO> createPatient(PatientDTO patientDTO);
 
-    ApiResult<PatientDTO> delete(Integer id);
+    ApiResult<PatientDTO> deletePatient(Integer id);
 }

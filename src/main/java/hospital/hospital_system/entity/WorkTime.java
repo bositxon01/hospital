@@ -4,6 +4,8 @@ import hospital.hospital_system.enums.DayEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,6 +13,9 @@ import lombok.*;
 @Setter
 @ToString
 @Entity
+
+@SQLRestriction(value = "deleted=false")
+@SQLDelete(sql = ("UPDATE work_time SET deleted=true WHERE id=?"))
 public class WorkTime extends AbsIntegerEntity {
     @ManyToOne
     private Employee employee;

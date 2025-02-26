@@ -41,17 +41,18 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public ApiResult<List<EmployeeGetDTO>> getAllEmployees() {
-        List<Employee> employees = employeeRepository.findAll();
+        List<Employee> employees = employeeRepository.findByDeletedFalse();
 
-        List<EmployeeGetDTO> list = employees.stream()
-                .map(this::getEmployeeGetDTO).toList();
-        return ApiResult.success(list);
+        List<EmployeeGetDTO> employeeDTOS = employees.stream()
+                .map(this::getEmployeeGetDTO)
+                .toList();
+        return ApiResult.success(employeeDTOS);
     }
 
 
     @Override
     public ApiResult<EmployeeGetDTO> getEmployeeById(Integer id) {
-        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+        Optional<Employee> optionalEmployee = employeeRepository.findByIdAndDeletedFalse(id);
         if (optionalEmployee.isEmpty()) {
             return ApiResult.error("Employee not found with id: " + id);
         }
@@ -62,12 +63,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ApiResult.success(employeeGetDTO);
     }
 
-
     @Override
     @Transactional
     public ApiResult<EmployeeAndUserDTO> createEmployee(EmployeeAndUserDTO employeeDTO) {
         String userEmail = employeeDTO.getUsername();
-        if (userRepository.existsByUsername(userEmail)) {
+        if (userRepository.existsByUsernameAndDeletedFalse(userEmail)) {
             return ApiResult.error("Employee already exists with username: " + userEmail);
         }
 
@@ -87,7 +87,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Integer attachmentId = employeeDTO.getAttachmentId();
         if (Objects.nonNull(attachmentId)) {
-            optionalAttachment = attachmentRepository.findById(attachmentId);
+            optionalAttachment = attachmentRepository.findByIdAndDeletedFalse(attachmentId);
             if (optionalAttachment.isEmpty()) {
                 return ApiResult.error("Attachment not found with id: " + attachmentId);
             }
@@ -121,7 +121,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public ApiResult<EmployeeAndUserDTO> updateEmployee(Integer id, EmployeeUpdateDTO employeeDTO) {
-        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+        Optional<Employee> optionalEmployee = employeeRepository.findByIdAndDeletedFalse(id);
         Optional<Position> positionById = positionRepository.findPositionById(employeeDTO.getPositionId());
 
         if (optionalEmployee.isEmpty()) {
@@ -148,20 +148,22 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Transactional
     @Override
-    public ApiResult<EmployeeAndUserDTO> deleteEmployee(Integer id) {
-        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+    public ApiResult<String> deleteEmployee(Integer id) {
+        Optional<Employee> optionalEmployee = employeeRepository.findByIdAndDeletedFalse(id);
         if (optionalEmployee.isEmpty()) {
             return ApiResult.error("Employee not found with id: " + id);
         }
 
         Employee employee = optionalEmployee.get();
 
-        employeeRepository.delete(employee);
-        userRepository.delete(employee.getUser());
+        employee.setDeleted(true);
+        employeeRepository.save(employee);
+
+        employee.getUser().setDeleted(true);
+        userRepository.save(employee.getUser());
 
         return ApiResult.success("Employee deleted successfully");
     }
-
 
     @Override
     @Transactional
@@ -204,7 +206,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public ApiResult<String> updateEmployeeAttachment(EmployeeAttachmentDto attachmentDto) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(attachmentDto.getEmployeeId());
-        Optional<Attachment> optionalAttachment = attachmentRepository.findById(attachmentDto.getAttachmentId());
+        Optional<Attachment> optionalAttachment = attachmentRepository.findByIdAndDeletedFalse(attachmentDto.getAttachmentId());
         if (optionalEmployee.isEmpty()) {
             return ApiResult.error("Employee not found with id: " + attachmentDto.getEmployeeId());
         }

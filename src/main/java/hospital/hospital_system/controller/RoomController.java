@@ -36,21 +36,21 @@ public class RoomController {
     @CheckAuth(permissions = PermissionEnum.CREATE_ROOM)
     @PostMapping("/create")
     public ResponseEntity<ApiResult<RoomDTO>> createRoom(@RequestBody RoomDTO roomDTO) {
-        ApiResult<RoomDTO> roomDTOApiResult = roomService.create(roomDTO);
+        ApiResult<RoomDTO> roomDTOApiResult = roomService.createRoom(roomDTO);
         return ResponseEntity.ok(roomDTOApiResult);
     }
 
     @CheckAuth(permissions = PermissionEnum.EDIT_ROOM)
     @PutMapping("/{id}")
     public ResponseEntity<ApiResult<RoomDTO>> updateRoom(@PathVariable Integer id, @RequestBody RoomDTO roomDTO) {
-        ApiResult<RoomDTO> update = roomService.update(id, roomDTO);
+        ApiResult<RoomDTO> update = roomService.updateRoom(id, roomDTO);
         return ResponseEntity.ok(update);
     }
 
     @CheckAuth(permissions = PermissionEnum.DELETE_ROOM)
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResult<RoomDTO>> deleteRoom(@PathVariable Integer id) {
-        ApiResult<RoomDTO> delete = roomService.delete(id);
+        ApiResult<RoomDTO> delete = roomService.deleteRoom(id);
         return ResponseEntity.ok(delete);
     }
 }

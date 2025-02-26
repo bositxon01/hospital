@@ -32,21 +32,22 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public ApiResult<List<PatientDTO>> getAllPatients() {
-        List<Patient> patients = patientRepository.findAll();
+        List<Patient> patients = patientRepository.findByDeletedFalse();
 
         if (patients.isEmpty()) {
             return ApiResult.success("No patients found");
         }
 
-        List<PatientDTO> patientDTOList = patients.stream()
-                .map(PatientServiceImpl::getPatientDTO).toList();
+        List<PatientDTO> patientDTOS = patients.stream()
+                .map(PatientServiceImpl::getPatientDTO)
+                .toList();
 
-        return ApiResult.success(patientDTOList);
+        return ApiResult.success(patientDTOS);
     }
 
     @Override
     public ApiResult<PatientDTO> getPatient(Integer id) {
-        Optional<Patient> optionalPatient = patientRepository.findById(id);
+        Optional<Patient> optionalPatient = patientRepository.findByIdAndDeletedFalse(id);
 
         if (optionalPatient.isEmpty()) {
             return ApiResult.error("Patient not found with id: " + id);
@@ -60,10 +61,9 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public ApiResult<PatientDTO> create(PatientDTO patientDTO) {
+    public ApiResult<PatientDTO> createPatient(PatientDTO patientDTO) {
         ComplaintDTO complaintDTO = patientDTO.getComplaintDTO();
         Complaint complaint = new Complaint();
-
         complaint.setName(complaintDTO.getName());
 
         if (Objects.nonNull(complaintDTO.getDescription())) {
@@ -71,8 +71,14 @@ public class PatientServiceImpl implements PatientService {
         }
         complaintRepository.save(complaint);
 
-        Optional<User> optionalUser = userRepository.findByUsername(patientDTO.getUsername());
-        Patient patient = new Patient();
+        Optional<User> optionalUser = userRepository.findByUsernameAndDeletedFalse(patientDTO.getUsername());
+
+        Optional<Patient> existingPatient = patientRepository.findByUsernameAndDeletedFalse(patientDTO.getUsername());
+
+        if (existingPatient.isPresent()) {
+            return ApiResult.error("Patient already exists with username: " + patientDTO.getUsername());
+        }
+
         User user;
 
         if (optionalUser.isEmpty()) {
@@ -88,6 +94,8 @@ public class PatientServiceImpl implements PatientService {
             //send email
         }
 
+        Patient patient = new Patient();
+
         patient.setFirstName(patientDTO.getFirstName());
         patient.setLastName(patientDTO.getLastName());
         patient.setDateOfBirth(patientDTO.getDateOfBirth());
@@ -97,18 +105,21 @@ public class PatientServiceImpl implements PatientService {
 
         patientDTO.setId(patient.getId());
 
-        return ApiResult.success("Patient created successfully");
+        return ApiResult.success("Patient created successfully", patientDTO);
     }
 
     @Transactional
     @Override
-    public ApiResult<PatientDTO> delete(Integer id) {
-        Optional<Patient> optionalPatient = patientRepository.findById(id);
+    public ApiResult<PatientDTO> deletePatient(Integer id) {
+        Optional<Patient> optionalPatient = patientRepository.findByIdAndDeletedFalse(id);
         if (optionalPatient.isEmpty()) {
             return ApiResult.error("Patient not found with id: " + id);
         }
 
-        patientRepository.deletePatientById(id);
+        Patient patient = optionalPatient.get();
+        patient.setDeleted(true);
+        patientRepository.save(patient);
+
         return ApiResult.success("Patient deleted successfully");
     }
 

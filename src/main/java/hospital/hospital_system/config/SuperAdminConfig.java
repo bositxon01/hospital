@@ -4,7 +4,6 @@ import hospital.hospital_system.entity.*;
 import hospital.hospital_system.enums.PermissionEnum;
 import hospital.hospital_system.enums.RoomEnum;
 import hospital.hospital_system.repository.*;
-import hospital.hospital_system.utils.AuthConstants;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,7 +32,7 @@ public class SuperAdminConfig {
 
     @PostConstruct
     public void init() {
-        Position position = positionRepository.findPositionByName(SUPER_ADMIN)
+        Position position = positionRepository.findPositionByNameAndDeletedFalse(SUPER_ADMIN)
                 .orElseGet(
                         () -> {
                             Position onePosition = new Position();
@@ -58,7 +57,7 @@ public class SuperAdminConfig {
                 );
 
         User user = new User();
-        if (userRepository.findByUsername("SUPERADMIN@gmail.com").isEmpty()) {
+        if (userRepository.findByUsernameAndDeletedFalse("SUPERADMIN@gmail.com").isEmpty()) {
             user.setUsername("SUPERADMIN@gmail.com");
             user.setPassword(passwordEncoder.encode("SUPERPASSWORD"));
             user.setPosition(position);

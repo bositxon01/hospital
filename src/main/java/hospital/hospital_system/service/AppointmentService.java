@@ -10,11 +10,11 @@ import java.util.List;
 
 public interface AppointmentService {
 
-    ApiResult<List<AppointmentGetDTO>> getAll();
+    ApiResult<List<AppointmentGetDTO>> getAllAppointments();
 
-    ApiResult<AppointmentGetDTO> get(Integer id);
+    ApiResult<AppointmentGetDTO> getAppointmentById(Integer id);
 
-    ApiResult<AppointmentGetDTO> save(AppointmentPostDTO appointmentPostDto);
+    ApiResult<AppointmentGetDTO> createAppointment(AppointmentPostDTO appointmentPostDto);
 
     List<EmployeeAvailableSlotsDTO> getAvailableSlots(LocalDate date);
 

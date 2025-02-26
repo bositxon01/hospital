@@ -35,7 +35,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private static final int APPOINTMENT_DURATION = 30;
 
     @Override
-    public ApiResult<List<AppointmentGetDTO>> getAll() {
+    public ApiResult<List<AppointmentGetDTO>> getAllAppointments() {
         List<Appointment> appointments = appointmentRepository.findAll();
         if (appointments.isEmpty()) {
             return ApiResult.success("No appointments found");
@@ -47,7 +47,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public ApiResult<AppointmentGetDTO> get(Integer id) {
+    public ApiResult<AppointmentGetDTO> getAppointmentById(Integer id) {
         Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
         if (optionalAppointment.isEmpty()) {
             return ApiResult.error("Appointment not found with id " + id);
@@ -58,7 +58,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public ApiResult<AppointmentGetDTO> save(AppointmentPostDTO appointmentPostDto) {
+    public ApiResult<AppointmentGetDTO> createAppointment(AppointmentPostDTO appointmentPostDto) {
         // Check if the patient exists
         Optional<Patient> optionalPatient = patientRepository.findById(appointmentPostDto.getPatientId());
         if (optionalPatient.isEmpty()) {
@@ -95,7 +95,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         //finding room by EmployeeId
-        Optional<EmployeeRoom> employeeRoomByEmployeeId = employeeRoomRepository.findEmployeeRoomByEmployeeId(employee.getId());
+        Optional<EmployeeRoom> employeeRoomByEmployeeId = employeeRoomRepository.findEmployeeRoomByEmployeeIdAndDeletedFalse(employee.getId());
         if (employeeRoomByEmployeeId.isEmpty()) {
             return ApiResult.error("Employee is not available on this date: " + appointmentDate);
         }
@@ -123,11 +123,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 
             DayEnum dayEnum = DayEnum.valueOf(date.getDayOfWeek().name());
 
-            List<WorkTime> workTimes = workTimeRepository.findByEmployeeIdAndDay(employee.getId(), dayEnum);
+            List<WorkTime> workTimes = workTimeRepository.findByEmployeeIdAndDayAndDeletedFalse(employee.getId(), dayEnum);
 
             Timestamp timestampDate = Timestamp.valueOf(date.atStartOfDay());
 
-            List<Appointment> bookedAppointmentTimes = appointmentRepository.findByEmployeeAndAppointmentTime_Date(employee.getId(), timestampDate);
+            List<Appointment> bookedAppointmentTimes = appointmentRepository.findByEmployeeAndAppointmentTime_DateAndDeletedFalse(employee.getId(), timestampDate);
 
             for (WorkTime workTime : workTimes) {
                 Turn turn = workTime.getTurn();

@@ -3,6 +3,7 @@ package hospital.hospital_system.service.impl;
 import hospital.hospital_system.entity.Employee;
 import hospital.hospital_system.entity.Turn;
 import hospital.hospital_system.entity.WorkTime;
+import hospital.hospital_system.enums.DayEnum;
 import hospital.hospital_system.payload.*;
 import hospital.hospital_system.repository.EmployeeRepository;
 import hospital.hospital_system.repository.TurnRepository;
@@ -24,7 +25,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
     private final TurnRepository turnRepository;
 
     @Override
-    public ApiResult<WorkTimeDTO> create(WorkTimeWithIdDTO workTimeWithIdDTO) {
+    public ApiResult<WorkTimeDTO> createWorkTime(WorkTimeWithIdDTO workTimeWithIdDTO) {
         Integer employeeId = workTimeWithIdDTO.getEmployee_id();
         Optional<Employee> optionalEmployee = employeeRepository.findById(employeeId);
 
@@ -42,7 +43,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
         Employee employee = optionalEmployee.get();
         Turn turn = optionalTurn.get();
 
-        boolean existsByEmployeeIdAndTurnIdAndDay = workTimeRepository.existsByEmployeeIdAndTurnIdAndDay(
+        boolean existsByEmployeeIdAndTurnIdAndDay = workTimeRepository.existsByEmployeeIdAndTurnIdAndDayAndDeletedFalse(
                 employee.getId(),
                 turn.getId(),
                 workTimeWithIdDTO.getDay()
@@ -64,7 +65,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 
     @Override
     public ApiResult<List<WorkTimeDTO>> getWorkTimes() {
-        List<WorkTime> workTimeList = workTimeRepository.findAll();
+        List<WorkTime> workTimeList = workTimeRepository.findByDeletedFalse();
 
         if (workTimeList.isEmpty()) {
             return ApiResult.success("No work-time found");
@@ -103,7 +104,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 
     @Override
     public ApiResult<WorkTimeDTO> getWorkTimeById(int id) {
-        Optional<WorkTime> optionalWorkTime = workTimeRepository.findById(id);
+        Optional<WorkTime> optionalWorkTime = workTimeRepository.findByIdAndDeletedFalse(id);
 
         if (optionalWorkTime.isEmpty()) {
             return ApiResult.error("Work-time not found with id: " + id);
@@ -139,6 +140,40 @@ public class WorkTimeServiceImpl implements WorkTimeService {
     }
 
     @Override
+    public ApiResult<List<WorkTimeDTO>> getWorkTimesByEmployeeAndDay(Integer employeeId, DayEnum day) {
+        List<WorkTime> workTimes = workTimeRepository.findByEmployeeIdAndDayAndDeletedFalse(employeeId, day);
+
+        if (workTimes.isEmpty()) {
+            return ApiResult.error("No work-time found for employee ID: " + employeeId + " on " + day);
+        }
+
+        List<WorkTimeDTO> workTimeDTOS = workTimes.stream()
+                .map(workTime -> {
+            Employee employee = workTime.getEmployee();
+            Turn turn = workTime.getTurn();
+
+            EmployeeDTO employeeDTO = new EmployeeDTO(
+                    employee.getId(),
+                    employee.getFirstName(),
+                    employee.getLastName(),
+                    employee.getDateOfBirth(),
+                    employee.getSpecialization());
+
+            TurnDTO turnDTO = new TurnDTO(
+                    turn.getId(),
+                    turn.getName(),
+                    turn.getStartTime(),
+                    turn.getEndTime()
+            );
+
+            return new WorkTimeDTO(employeeDTO, workTime.getDay(), turnDTO);
+        }).toList();
+
+        return ApiResult.success(workTimeDTOS);
+    }
+
+
+    @Override
     public ApiResult<WorkTimeDTO> updateWorkTime(int id, WorkTimeWithIdDTO workTimeWithIdDTO) {
 
         Optional<WorkTime> optionalWorkTime = workTimeRepository.findById(id);
@@ -164,7 +199,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
         Employee employee = optionalEmployee.get();
         Turn turn = optionalTurn.get();
 
-        boolean existsByEmployeeIdAndTurnIdAndDay = workTimeRepository.existsByEmployeeIdAndTurnIdAndDay(
+        boolean existsByEmployeeIdAndTurnIdAndDay = workTimeRepository.existsByEmployeeIdAndTurnIdAndDayAndDeletedFalse(
                 employee.getId(),
                 turn.getId(),
                 workTimeWithIdDTO.getDay()
@@ -183,7 +218,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
     }
 
     @Override
-    public ApiResult<WorkTimeDTO> delete(int id) {
+    public ApiResult<WorkTimeDTO> deleteWorkTime(int id) {
         Optional<WorkTime> optionalWorkTime = workTimeRepository.findById(id);
 
         if (optionalWorkTime.isEmpty()) {
@@ -191,7 +226,9 @@ public class WorkTimeServiceImpl implements WorkTimeService {
         }
 
         WorkTime workTime = optionalWorkTime.get();
-        workTimeRepository.delete(workTime);
+        workTime.setDeleted(true);
+        workTimeRepository.save(workTime);
+
         return ApiResult.success("Work-time deleted successfully");
     }
 }

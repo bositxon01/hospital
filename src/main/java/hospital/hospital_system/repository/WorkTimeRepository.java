@@ -6,10 +6,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface WorkTimeRepository extends JpaRepository<WorkTime, Integer> {
-    boolean existsByEmployeeIdAndTurnIdAndDay(Integer employeeId, Integer turnId, DayEnum day);
+    boolean existsByEmployeeIdAndTurnIdAndDayAndDeletedFalse(Integer employeeId, Integer turnId, DayEnum day);
 
-    List<WorkTime> findByEmployeeIdAndDay(Integer employeeId, DayEnum day);
+    List<WorkTime> findByEmployeeIdAndDayAndDeletedFalse(Integer employeeId, DayEnum day);
+
+    List<WorkTime> findByDeletedFalse();
+
+    Optional<WorkTime> findByIdAndDeletedFalse(Integer id);
+
 }

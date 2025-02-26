@@ -6,6 +6,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,6 +15,9 @@ import lombok.*;
 @Setter
 @Entity
 @ToString
+
+@SQLRestriction(value = "deleted=false")
+@SQLDelete(sql = ("UPDATE attachment SET deleted=true WHERE id=?"))
 public class Attachment extends AbsIntegerEntity {
 
     @NotBlank(message = "File name cannot be blank")

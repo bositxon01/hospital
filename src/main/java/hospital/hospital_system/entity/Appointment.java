@@ -3,6 +3,8 @@ package hospital.hospital_system.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.sql.Timestamp;
 
@@ -18,6 +20,9 @@ import java.sql.Timestamp;
                 @UniqueConstraint(columnNames = {"room_id", "appointment_time"})
         }
 )
+
+@SQLRestriction(value = "deleted=false")
+@SQLDelete(sql = ("UPDATE appointment SET deleted=true WHERE id=?"))
 public class Appointment extends AbsIntegerEntity {
 
     @ManyToOne

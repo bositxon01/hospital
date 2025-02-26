@@ -23,7 +23,7 @@ public class WorkTimeController {
     @CheckAuth(permissions = PermissionEnum.CREATE_WORK_TIME)
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody WorkTimeWithIdDTO workTimeWithIdDTO) {
-        ApiResult<WorkTimeDTO> apiResult = workTimeService.create(workTimeWithIdDTO);
+        ApiResult<WorkTimeDTO> apiResult = workTimeService.createWorkTime(workTimeWithIdDTO);
         return ResponseEntity.ok(apiResult);
     }
 
@@ -52,7 +52,7 @@ public class WorkTimeController {
     @CheckAuth(permissions = PermissionEnum.DELETE_WORK_TIME)
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteWorkTime(@PathVariable int id) {
-        ApiResult<WorkTimeDTO> apiResult = workTimeService.delete(id);
+        ApiResult<WorkTimeDTO> apiResult = workTimeService.deleteWorkTime(id);
         return ResponseEntity.ok(apiResult);
     }
 

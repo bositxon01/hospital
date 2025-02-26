@@ -8,7 +8,6 @@ import hospital.hospital_system.security.JWTProvider;
 import hospital.hospital_system.service.AuthService;
 import hospital.hospital_system.service.EmailService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -44,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username)
+        return userRepository.findByUsernameAndDeletedFalse(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
@@ -69,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ApiResult<String> forgetPassword(String email) {
-        Optional<User> optionalUser = userRepository.findByUsername(email);
+        Optional<User> optionalUser = userRepository.findByUsernameAndDeletedFalse(email);
 
         if (optionalUser.isEmpty()) {
             return ApiResult.error("User not found with email: " + email);
@@ -110,7 +109,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public ApiResult<String> resetPassword(String email, String newPassword) {
-        Optional<User> optionalUser = userRepository.findByUsername(email);
+        Optional<User> optionalUser = userRepository.findByUsernameAndDeletedFalse(email);
 
         if (optionalUser.isEmpty()) {
             return ApiResult.error("User not found with email: " + email);

@@ -14,7 +14,7 @@ public interface EmployeeService {
 
     ApiResult<EmployeeAndUserDTO> updateEmployee(Integer id, EmployeeUpdateDTO employeeUpdateDto);
 
-    ApiResult<EmployeeAndUserDTO> deleteEmployee(Integer id);
+    ApiResult<String> deleteEmployee(Integer id);
 
     ApiResult<?> verify(String email, String code);
 

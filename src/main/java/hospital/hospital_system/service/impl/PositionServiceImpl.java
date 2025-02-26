@@ -5,6 +5,7 @@ import hospital.hospital_system.entity.PositionPermission;
 import hospital.hospital_system.enums.PermissionEnum;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.PositionDTO;
+import hospital.hospital_system.repository.EmployeeRepository;
 import hospital.hospital_system.repository.PositionPermissionRepository;
 import hospital.hospital_system.repository.PositionRepository;
 import hospital.hospital_system.service.PositionService;
@@ -22,6 +23,7 @@ public class PositionServiceImpl implements PositionService {
     private final PositionRepository positionRepository;
 
     private final PositionPermissionRepository positionPermissionRepository;
+    private final EmployeeRepository employeeRepository;
 
     @Override
     public ApiResult<List<PositionDTO>> getAllPositions() {
@@ -47,9 +49,8 @@ public class PositionServiceImpl implements PositionService {
         return ApiResult.success(positionDTOList);
     }
 
-
     @Override
-    public ApiResult<PositionDTO> getPosition(Integer id) {
+    public ApiResult<PositionDTO> getPositionById(Integer id) {
         Optional<Position> optionalPosition = positionRepository.findById(id);
         if (optionalPosition.isEmpty()) {
             return ApiResult.error("No position found");
@@ -60,8 +61,8 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public ApiResult<PositionDTO> create(PositionDTO positionDTO) {
-        Optional<Position> positionByName = positionRepository.findPositionByName(positionDTO.getName());
+    public ApiResult<PositionDTO> createPosition(PositionDTO positionDTO) {
+        Optional<Position> positionByName = positionRepository.findPositionByNameAndDeletedFalse(positionDTO.getName());
         if (positionByName.isPresent()) {
             return ApiResult.error("This positionName already exists");
         }
@@ -69,10 +70,13 @@ public class PositionServiceImpl implements PositionService {
         position.setName(positionDTO.getName());
         position.setSalary(positionDTO.getSalary());
         positionRepository.save(position);
+        positionDTO.setId(position.getId());
+
         List<PermissionEnum> permissions = positionDTO.getPermissions();
         if (permissions.isEmpty()) {
             return ApiResult.error("Permissions cannot be empty");
         }
+
         for (PermissionEnum permission : permissions) {
             PositionPermission positionPermission = new PositionPermission();
             positionPermission.setPosition(position);
@@ -80,12 +84,14 @@ public class PositionServiceImpl implements PositionService {
             positionPermissionRepository.save(positionPermission);
         }
 
-        return ApiResult.success("Successfully created position");
+        positionDTO.setPermissions(permissions);
+
+        return ApiResult.success("Successfully created position", positionDTO);
     }
 
     @Transactional
     @Override
-    public ApiResult<PositionDTO> update(Integer id, PositionDTO positionDTO) {
+    public ApiResult<PositionDTO> updatePosition(Integer id, PositionDTO positionDTO) {
         Optional<Position> optionalPosition = positionRepository.findById(id);
         if (optionalPosition.isEmpty()) {
             return ApiResult.error("No position found for given id");
@@ -95,6 +101,9 @@ public class PositionServiceImpl implements PositionService {
         position.setName(positionDTO.getName());
         position.setSalary(positionDTO.getSalary());
         positionRepository.save(position);
+
+        positionDTO.setId(position.getId());
+
         List<PermissionEnum> permissions = positionDTO.getPermissions();
 
         if (permissions.isEmpty()) {
@@ -109,18 +118,30 @@ public class PositionServiceImpl implements PositionService {
             positionPermission.setPermission(permission);
             positionPermissionRepository.save(positionPermission);
         }
-        return ApiResult.success("Successfully updated position");
+        positionDTO.setPermissions(permissions);
+
+        return ApiResult.success("Successfully updated position", positionDTO);
     }
 
     @Transactional
     @Override
-    public ApiResult<PositionDTO> delete(Integer id) {
-        try {
-            positionPermissionRepository.deleteAllByPosition_Id(id);
-            positionRepository.deleteById(id);
-            return ApiResult.success("Successfully deleted position");
-        } catch (Exception e) {
-            return ApiResult.error(e.getMessage());
+    public ApiResult<String> deletePosition(Integer id) {
+        Optional<Position> optionalPosition = positionRepository.findById(id);
+        if (optionalPosition.isEmpty()) {
+            return ApiResult.error("Position not found");
         }
+
+        Position position = optionalPosition.get();
+
+        boolean isAssigned = employeeRepository.existsByUserPositionIdAndDeletedFalse(id);
+        if (isAssigned) {
+            return ApiResult.error("Cannot delete position because it is assigned to employees.");
+        }
+
+        position.setDeleted(true);
+        positionRepository.save(position);
+
+        return ApiResult.success("Position deleted successfully");
     }
+
 }

@@ -24,19 +24,19 @@ public class AppointmentController {
 
     @GetMapping
     public ResponseEntity<ApiResult<List<AppointmentGetDTO>>> getAppointments() {
-        ApiResult<List<AppointmentGetDTO>> all = appointmentService.getAll();
+        ApiResult<List<AppointmentGetDTO>> all = appointmentService.getAllAppointments();
         return ResponseEntity.ok(all);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResult<AppointmentGetDTO>> getAppointment(@PathVariable Integer id) {
-        ApiResult<AppointmentGetDTO> appointmentGetDtoApiResult = appointmentService.get(id);
+        ApiResult<AppointmentGetDTO> appointmentGetDtoApiResult = appointmentService.getAppointmentById(id);
         return ResponseEntity.ok(appointmentGetDtoApiResult);
     }
 
     @PostMapping("/create")
     public ResponseEntity<ApiResult<AppointmentGetDTO>> createAppointment(@RequestBody AppointmentPostDTO appointmentPostDto) {
-        ApiResult<AppointmentGetDTO> apiResult = appointmentService.save(appointmentPostDto);
+        ApiResult<AppointmentGetDTO> apiResult = appointmentService.createAppointment(appointmentPostDto);
         return ResponseEntity.ok(apiResult);
     }
 

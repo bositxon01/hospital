@@ -10,11 +10,7 @@ import java.util.UUID;
 @Repository
 public interface AttachmentRepository extends JpaRepository<Attachment, UUID> {
 
-    Optional<Attachment> findByFileName(String fileName);
+    Optional<Attachment> findAttachmentByIdAndDeletedFalse(Integer id);
 
-    Optional<Attachment> findByPath(String path);
-
-    Optional<Attachment> findAttachmentById(Integer id);
-
-    Optional<Attachment> findById(Integer id);
+    Optional<Attachment> findByIdAndDeletedFalse(Integer id);
 }
