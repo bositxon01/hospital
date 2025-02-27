@@ -12,8 +12,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     boolean existsByUserPositionIdAndDeletedFalse(Integer id);
 
-    List<Employee> findByDeletedFalse();
-
     Optional<Employee> findByIdAndDeletedFalse(Integer id);
+
+    List<Employee> findByDeletedFalse();
 
 }

@@ -6,6 +6,7 @@ import hospital.hospital_system.payload.AppointmentPostDTO;
 import hospital.hospital_system.payload.EmployeeAvailableSlotsDTO;
 import hospital.hospital_system.service.AppointmentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -35,13 +36,13 @@ public class AppointmentController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ApiResult<AppointmentGetDTO>> createAppointment(@RequestBody AppointmentPostDTO appointmentPostDto) {
+    public ResponseEntity<ApiResult<AppointmentGetDTO>> createAppointment(@Valid @RequestBody AppointmentPostDTO appointmentPostDto) {
         ApiResult<AppointmentGetDTO> apiResult = appointmentService.createAppointment(appointmentPostDto);
         return ResponseEntity.ok(apiResult);
     }
 
     @GetMapping("/available-slots")
-    public ResponseEntity<List<EmployeeAvailableSlotsDTO>> getAvailableSlots(
+    public ResponseEntity<ApiResult<List<EmployeeAvailableSlotsDTO>>> getAvailableSlots(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return ResponseEntity.ok(appointmentService.getAvailableSlots(date));
     }

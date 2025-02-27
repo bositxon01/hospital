@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,7 +32,6 @@ public class EmployeeController {
     public ResponseEntity<ApiResult<EmployeeGetDTO>> getEmployeeById(@PathVariable("id") Integer id) {
         ApiResult<EmployeeGetDTO> employeeById = employeeService.getEmployeeById(id);
         return ResponseEntity.ok(employeeById);
-
     }
 
     @CheckAuth(permissions = PermissionEnum.CREATE_EMPLOYEE)
@@ -50,7 +50,7 @@ public class EmployeeController {
 
     @CheckAuth(permissions = PermissionEnum.EDIT_EMPLOYEE)
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Integer id,
+    public ResponseEntity<ApiResult<EmployeeAndUserDTO>> update(@PathVariable Integer id,
                                     @RequestBody EmployeeUpdateDTO employeeDTO) {
         ApiResult<EmployeeAndUserDTO> updateEmployee = employeeService.updateEmployee(id, employeeDTO);
         return ResponseEntity.ok(updateEmployee);
@@ -58,8 +58,8 @@ public class EmployeeController {
 
     @CheckAuth(permissions = PermissionEnum.EDIT_EMPLOYEE)
     @PutMapping("/attachment")
-    public ResponseEntity<?> updateAttachment(@RequestBody EmployeeAttachmentDto attachmentDto) {
-        ApiResult<String> apiResult = employeeService.updateEmployeeAttachment(attachmentDto);
+    public ResponseEntity<ApiResult<Object>> updateAttachment(@RequestBody EmployeeAttachmentDto attachmentDto) {
+        ApiResult<Object> apiResult = employeeService.updateEmployeeAttachment(attachmentDto);
         return ResponseEntity.ok(apiResult);
     }
 

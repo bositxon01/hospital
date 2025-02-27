@@ -1,7 +1,7 @@
 package hospital.hospital_system.service.impl;
 
 import hospital.hospital_system.entity.Room;
-import hospital.hospital_system.enums.RoomEnum;
+import hospital.hospital_system.mapper.RoomMapper;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.RoomDTO;
 import hospital.hospital_system.repository.RoomRepository;
@@ -15,72 +15,69 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
+
     private final RoomRepository roomRepository;
+    private final RoomMapper roomMapper;
 
     @Override
     public ApiResult<List<RoomDTO>> getAllRooms() {
-        List<RoomDTO> rooms = roomRepository.findAll()
-                .stream()
-                .map(RoomServiceImpl::getRoomDTO)
-                .toList();
-        return ApiResult.success(rooms);
+
+        List<Room> roomList = roomRepository.findByDeletedFalse();
+
+        if (roomList.isEmpty())
+            return ApiResult.success("No rooms found");
+
+        return ApiResult.success(roomMapper.toDTO(roomList));
     }
 
     @Override
-    public ApiResult<RoomDTO> getRoom(Integer id) {
-        Optional<Room> optionalRoom = roomRepository.findById(id);
-        return optionalRoom.map(room -> ApiResult.success(getRoomDTO(room)))
-                .orElseGet(() -> ApiResult.error("Room not found"));
+    public ApiResult<RoomDTO> getRoomById(Integer id) {
+        return roomRepository.findByIdAndDeletedFalse(id)
+                .map(roomMapper::toDTO)
+                .map(ApiResult::success)
+                .orElse(ApiResult.error("Room not found with id" + id));
     }
 
     @Override
     public ApiResult<RoomDTO> createRoom(RoomDTO roomDTO) {
-        RoomEnum name = roomDTO.getName();
-        Optional<Room> optionalRoom = roomRepository.findByNameAndDeletedFalse(name);
 
-        if (optionalRoom.isPresent()) {
-            return ApiResult.error("Room already exists with name " + name);
-        }
+        if (roomRepository.existsByNameAndDeletedFalse(roomDTO.getName()))
+            return ApiResult.error("Room already exists with name " + roomDTO.getName());
 
-        Room room = new Room();
-        room.setName(roomDTO.getName());
-        room.setStatus(roomDTO.isStatus());
+        Room room = roomMapper.toEntity(roomDTO);
         roomRepository.save(room);
 
-        return ApiResult.success(getRoomDTO(room));
+        return ApiResult.success("Room created successfully", roomMapper.toDTO(room));
     }
 
     @Override
     public ApiResult<RoomDTO> updateRoom(Integer id, RoomDTO roomDTO) {
-        Optional<Room> optionalRoom = roomRepository.findById(id);
+        Optional<Room> optionalRoom = roomRepository.findByIdAndDeletedFalse(id);
 
-        if (optionalRoom.isPresent()) {
-            Room room = optionalRoom.get();
-            room.setName(roomDTO.getName());
-            room.setStatus(roomDTO.isStatus());
+        if (optionalRoom.isEmpty())
+            return ApiResult.error("Room not found with id " + id);
 
-            roomRepository.save(room);
+        Room room = optionalRoom.get();
+        room.setName(roomDTO.getName());
+        room.setStatus(roomDTO.isStatus());
 
-            return ApiResult.success(getRoomDTO(room));
-        }
-        return ApiResult.error("Room not found");
+        roomRepository.save(room);
+
+        return ApiResult.success("Room updated successfully", roomMapper.toDTO(room));
     }
 
     @Override
-    public ApiResult<RoomDTO> deleteRoom(Integer id) {
-        Optional<Room> optionalRoom = roomRepository.findById(id);
+    public ApiResult<String> deleteRoom(Integer id) {
+        Optional<Room> optionalRoom = roomRepository.findByIdAndDeletedFalse(id);
 
-        if (optionalRoom.isPresent()) {
-            Room room = optionalRoom.get();
-            room.setDeleted(true);
-            roomRepository.save(room);
+        if (optionalRoom.isEmpty())
+            return ApiResult.error("Room not found with id " + id);
 
-            return ApiResult.success("Room deleted successfully");
-        }
-        return ApiResult.error("Room not found");
+        Room room = optionalRoom.get();
+        room.setDeleted(true);
+        roomRepository.save(room);
+
+        return ApiResult.success("Room deleted successfully");
     }
 
-    private static RoomDTO getRoomDTO(Room room) {
-        return new RoomDTO(room.getId(), room.getName(), room.isStatus());
-    }
 }

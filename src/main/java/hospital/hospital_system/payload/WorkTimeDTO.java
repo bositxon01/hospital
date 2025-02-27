@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class WorkTimeDTO {
+
     private EmployeeDTO employeeDTO;
 
     private DayEnum day;
 
     private TurnDTO turnDTO;
+
 }

@@ -6,13 +6,15 @@ import hospital.hospital_system.payload.TurnDTO;
 import java.util.List;
 
 public interface TurnService {
-    ApiResult<TurnDTO> createTurn(TurnDTO turnDTO);
+
+    ApiResult<TurnDTO> getTurnById(Integer id);
 
     ApiResult<List<TurnDTO>> getAllTurns();
 
-    ApiResult<TurnDTO> getTurnById(int id);
+    ApiResult<TurnDTO> createTurn(TurnDTO turnDTO);
 
     ApiResult<TurnDTO> updateTurn(Integer id, TurnDTO turnDTO);
 
-    ApiResult<String> deleteTurn(int id);
+    ApiResult<String> deleteTurn(Integer id);
+
 }

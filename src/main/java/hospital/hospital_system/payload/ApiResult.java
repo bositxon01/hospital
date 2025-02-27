@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResult<T> {
+
     private boolean success;
     private String message;
     private T data;

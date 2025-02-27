@@ -7,7 +7,9 @@ import hospital.hospital_system.repository.UserRepository;
 import hospital.hospital_system.security.JWTProvider;
 import hospital.hospital_system.service.AuthService;
 import hospital.hospital_system.service.EmailService;
+import hospital.hospital_system.utils.PasswordResetToken;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,21 +27,16 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
+
     private final UserRepository userRepository;
-
     private final EmailService emailService;
-
     private final PasswordEncoder passwordEncoder;
-
     private final JWTProvider jwtProvider;
-
     private final AuthenticationManager authenticationManager;
 
-    private final Map<String, Long> codeExpiryTimes = new ConcurrentHashMap<>();
-    private final Map<String, String> verificationCodes = new ConcurrentHashMap<>();
-    private final Map<String, Boolean> verifiedEmails = new ConcurrentHashMap<>();
+    private final Map<String, PasswordResetToken> resetTokens = new ConcurrentHashMap<>();
 
-    private static final Integer EXPIRY_TIME = 60_000;
+    private static final long EXPIRY_TIME = 5 * 60 * 1000;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -70,14 +67,14 @@ public class AuthServiceImpl implements AuthService {
     public ApiResult<String> forgetPassword(String email) {
         Optional<User> optionalUser = userRepository.findByUsernameAndDeletedFalse(email);
 
-        if (optionalUser.isEmpty()) {
+        if (optionalUser.isEmpty())
             return ApiResult.error("User not found with email: " + email);
-        }
 
         String verificationCode = generateVerificationCode();
 
-        verificationCodes.put(email, verificationCode);
-        codeExpiryTimes.put(email, System.currentTimeMillis() + EXPIRY_TIME);
+        long expiryTime = System.currentTimeMillis() + EXPIRY_TIME;
+
+        resetTokens.put(email, new PasswordResetToken(verificationCode, expiryTime));
 
         emailService.sendVerificationEmail(email, verificationCode);
 
@@ -85,49 +82,37 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ApiResult<String> verifyResetCode(String email, String code) {
-        String storedCode = verificationCodes.get(email);
-
-        if (storedCode == null ||
-                System.currentTimeMillis() > codeExpiryTimes.getOrDefault(email, 0L)) {
-
-            verificationCodes.remove(email);
-            codeExpiryTimes.remove(email);
-
-            return ApiResult.error("Verification code has expired. Please request a new one.");
-        }
-
-        if (!storedCode.equals(code)) {
-            return ApiResult.error("Invalid verification code. Please request a new one.");
-        }
-
-        verifiedEmails.put(email, true);
-
-        return ApiResult.success("Verification successful. You can now reset your password.");
-    }
-
-    @Override
     @Transactional
-    public ApiResult<String> resetPassword(String email, String newPassword) {
-        Optional<User> optionalUser = userRepository.findByUsernameAndDeletedFalse(email);
+    public ApiResult<String> resetPassword(String email, String code, String newPassword) {
+        PasswordResetToken resetToken = resetTokens.get(email);
 
-        if (optionalUser.isEmpty()) {
-            return ApiResult.error("User not found with email: " + email);
+        if (resetToken == null || System.currentTimeMillis() > resetToken.expiryTime()) {
+            resetTokens.remove(email);
+            return ApiResult.error("Verification code expired. Request a new one.");
         }
 
-        if (!verifiedEmails.getOrDefault(email, false)) {
-            return ApiResult.error("You must verify your email before resetting your password!");
-        }
+        if (!resetToken.code().equals(code))
+            return ApiResult.error("Invalid verification code.");
 
-        User user = optionalUser.get();
+        User user = userRepository.findByUsernameAndDeletedFalse(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
-        verificationCodes.remove(email);
-        codeExpiryTimes.remove(email);
-        verifiedEmails.remove(email);
+        resetTokens.remove(email);
 
-        return ApiResult.success("Password reset successfully");
+        return ApiResult.success("Password reset successfully.");
+    }
+
+    @Scheduled(fixedRate = 60_000)
+    public void cleanupExpiredTokens() {
+        long now = System.currentTimeMillis();
+
+        resetTokens.entrySet()
+                .removeIf(
+                        entry ->
+                                now > entry.getValue().expiryTime());
     }
 
     private static String generateVerificationCode() {

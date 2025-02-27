@@ -8,6 +8,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -19,10 +20,12 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
+@FieldNameConstants
 
 @SQLRestriction(value = "deleted=false")
 @SQLDelete(sql = ("UPDATE position SET deleted=true WHERE id=?"))
 public class Position extends AbsIntegerEntity {
+
     @NotBlank
     @Column(unique = true, nullable = false)
     private String name;
@@ -40,4 +43,5 @@ public class Position extends AbsIntegerEntity {
     @OneToMany(mappedBy = "position")
     @ToString.Exclude
     private List<User> users;
+
 }

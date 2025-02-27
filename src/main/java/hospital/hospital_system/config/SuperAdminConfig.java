@@ -14,21 +14,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static hospital.hospital_system.utils.AuthConstants.SUPER_ADMIN;
+import static hospital.hospital_system.utils.AuthConstants.SUPER_ADMIN_GMAIL;
 
 @RequiredArgsConstructor
 @Component
 public class SuperAdminConfig {
+
     private final PositionRepository positionRepository;
-
     private final PositionPermissionRepository positionPermissionRepository;
-
     private final UserRepository userRepository;
-
     private final EmployeeRepository employeeRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final RoomRepository roomRepository;
+
 
     @PostConstruct
     public void init() {
@@ -57,8 +55,9 @@ public class SuperAdminConfig {
                 );
 
         User user = new User();
-        if (userRepository.findByUsernameAndDeletedFalse("SUPERADMIN@gmail.com").isEmpty()) {
-            user.setUsername("SUPERADMIN@gmail.com");
+
+        if (userRepository.findByUsernameAndDeletedFalse(SUPER_ADMIN_GMAIL).isEmpty()) {
+            user.setUsername(SUPER_ADMIN_GMAIL);
             user.setPassword(passwordEncoder.encode("SUPERPASSWORD"));
             user.setPosition(position);
             userRepository.save(user);
@@ -72,7 +71,9 @@ public class SuperAdminConfig {
             employee.setDateOfBirth(birthDate);
             employee.setSpecialization(SUPER_ADMIN);
             employee.setUser(user);
+
             employeeRepository.save(employee);
+
             roomInit();
         }
     }
@@ -84,4 +85,5 @@ public class SuperAdminConfig {
             roomRepository.save(room);
         }
     }
+
 }

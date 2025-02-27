@@ -13,4 +13,5 @@ public interface AttachmentRepository extends JpaRepository<Attachment, UUID> {
     Optional<Attachment> findAttachmentByIdAndDeletedFalse(Integer id);
 
     Optional<Attachment> findByIdAndDeletedFalse(Integer id);
+
 }

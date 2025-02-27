@@ -37,4 +37,5 @@ public class Turn extends AbsIntegerEntity {
     @ToString.Exclude
     @JsonIgnore
     private List<WorkTime> workTimes;
+
 }

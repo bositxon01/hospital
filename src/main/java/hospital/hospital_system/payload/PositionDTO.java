@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.List;
 
@@ -14,7 +15,9 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Builder
+@FieldNameConstants
 public class PositionDTO {
+
     private Integer id;
 
     @NotBlank(message = "Position name is required")
@@ -28,4 +31,5 @@ public class PositionDTO {
     public void setName(String name) {
         this.name = name.toUpperCase();
     }
+
 }

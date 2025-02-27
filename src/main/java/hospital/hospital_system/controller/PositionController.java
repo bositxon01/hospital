@@ -17,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Position API", description = "Position CRUD API")
 public class PositionController {
+
     public final PositionService positionService;
 
     @CheckAuth(permissions = PermissionEnum.VIEW_POSITION)
@@ -29,8 +30,8 @@ public class PositionController {
     @CheckAuth(permissions = PermissionEnum.VIEW_POSITION)
     @GetMapping("/{id}")
     public ResponseEntity<ApiResult<PositionDTO>> getPosition(@PathVariable Integer id) {
-        ApiResult<PositionDTO> positionDto = positionService.getPositionById(id);
-        return ResponseEntity.ok(positionDto);
+        ApiResult<PositionDTO> positionDTO = positionService.getPositionById(id);
+        return ResponseEntity.ok(positionDTO);
     }
 
     @CheckAuth(permissions = PermissionEnum.CREATE_POSITION)
@@ -53,4 +54,5 @@ public class PositionController {
         ApiResult<String> delete = positionService.deletePosition(id);
         return ResponseEntity.ok(delete);
     }
+
 }

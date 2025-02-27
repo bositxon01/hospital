@@ -3,6 +3,7 @@ package hospital.hospital_system.service.impl;
 import hospital.hospital_system.entity.Position;
 import hospital.hospital_system.entity.PositionPermission;
 import hospital.hospital_system.enums.PermissionEnum;
+import hospital.hospital_system.mapper.PositionMapper;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.PositionDTO;
 import hospital.hospital_system.repository.EmployeeRepository;
@@ -20,128 +21,105 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional
 public class PositionServiceImpl implements PositionService {
-    private final PositionRepository positionRepository;
 
+    private final PositionRepository positionRepository;
     private final PositionPermissionRepository positionPermissionRepository;
     private final EmployeeRepository employeeRepository;
+    private final PositionMapper positionMapper;
 
     @Override
     public ApiResult<List<PositionDTO>> getAllPositions() {
 
-        List<Position> allPosition = positionRepository.findAll();
-        if (allPosition.isEmpty()) {
-            return ApiResult.success("No positions found");
-        }
+        List<Position> positionList = positionRepository.findByDeletedFalse();
 
-        List<PositionDTO> positionDTOList = allPosition.stream()
-                .map(position -> new PositionDTO(
-                                position.getId(),
-                                position.getName(),
-                                position.getSalary(),
-                                position
-                                        .getPositionPermissionList()
-                                        .stream()
-                                        .map(PositionPermission::getPermission)
-                                        .toList()
-                        )
-                ).toList();
+        if (positionList.isEmpty())
+            return ApiResult.success("No positionList found");
 
-        return ApiResult.success(positionDTOList);
+        List<PositionDTO> positionDTOS = positionMapper.toDTO(positionList);
+
+        return ApiResult.success(positionDTOS);
     }
 
     @Override
     public ApiResult<PositionDTO> getPositionById(Integer id) {
-        Optional<Position> optionalPosition = positionRepository.findById(id);
-        if (optionalPosition.isEmpty()) {
-            return ApiResult.error("No position found");
-        }
-        Position position = optionalPosition.get();
-        PositionDTO positionDTO = new PositionDTO(position.getId(), position.getName(), position.getSalary(), position.getPositionPermissionList().stream().map(PositionPermission::getPermission).toList());
-        return ApiResult.success(positionDTO);
+        return positionRepository.findByIdAndDeletedFalse(id)
+                .map(positionMapper::toDTO)
+                .map(ApiResult::success)
+                .orElse(ApiResult.error("No position found with id: " + id));
     }
 
     @Override
     public ApiResult<PositionDTO> createPosition(PositionDTO positionDTO) {
         Optional<Position> positionByName = positionRepository.findPositionByNameAndDeletedFalse(positionDTO.getName());
-        if (positionByName.isPresent()) {
+
+        if (positionByName.isPresent())
             return ApiResult.error("This positionName already exists");
-        }
-        Position position = new Position();
-        position.setName(positionDTO.getName());
-        position.setSalary(positionDTO.getSalary());
+
+        Position position = positionMapper.toEntity(positionDTO);
         positionRepository.save(position);
-        positionDTO.setId(position.getId());
 
-        List<PermissionEnum> permissions = positionDTO.getPermissions();
-        if (permissions.isEmpty()) {
-            return ApiResult.error("Permissions cannot be empty");
-        }
-
-        for (PermissionEnum permission : permissions) {
-            PositionPermission positionPermission = new PositionPermission();
+        for (PositionPermission positionPermission : position.getPositionPermissionList()) {
             positionPermission.setPosition(position);
-            positionPermission.setPermission(permission);
-            positionPermissionRepository.save(positionPermission);
         }
 
-        positionDTO.setPermissions(permissions);
+        positionPermissionRepository.saveAll(position.getPositionPermissionList());
 
-        return ApiResult.success("Successfully created position", positionDTO);
+        return ApiResult.success("Position created successfully", positionMapper.toDTO(position));
     }
 
     @Transactional
     @Override
     public ApiResult<PositionDTO> updatePosition(Integer id, PositionDTO positionDTO) {
-        Optional<Position> optionalPosition = positionRepository.findById(id);
-        if (optionalPosition.isEmpty()) {
-            return ApiResult.error("No position found for given id");
-        }
+
+        Optional<Position> optionalPosition = positionRepository.findByIdAndDeletedFalse(id);
+
+        if (optionalPosition.isEmpty())
+            return ApiResult.error("Position not found with id: " + id);
 
         Position position = optionalPosition.get();
-        position.setName(positionDTO.getName());
-        position.setSalary(positionDTO.getSalary());
+
+        positionMapper.updateEntity(positionDTO, position);
         positionRepository.save(position);
 
-        positionDTO.setId(position.getId());
-
-        List<PermissionEnum> permissions = positionDTO.getPermissions();
-
-        if (permissions.isEmpty()) {
+        if (positionDTO.getPermissions().isEmpty())
             return ApiResult.error("Permissions cannot be empty");
-        }
 
-        positionPermissionRepository.deleteAllByPosition_Id((position.getId()));
+        updatePositionPermissions(position, positionDTO.getPermissions());
 
-        for (PermissionEnum permission : permissions) {
-            PositionPermission positionPermission = new PositionPermission();
-            positionPermission.setPosition(position);
-            positionPermission.setPermission(permission);
-            positionPermissionRepository.save(positionPermission);
-        }
-        positionDTO.setPermissions(permissions);
-
-        return ApiResult.success("Successfully updated position", positionDTO);
+        return ApiResult.success("Position updated successfully", positionMapper.toDTO(position));
     }
 
     @Transactional
     @Override
     public ApiResult<String> deletePosition(Integer id) {
-        Optional<Position> optionalPosition = positionRepository.findById(id);
-        if (optionalPosition.isEmpty()) {
+        Optional<Position> optionalPosition = positionRepository.findByIdAndDeletedFalse(id);
+
+        if (optionalPosition.isEmpty())
             return ApiResult.error("Position not found");
-        }
 
         Position position = optionalPosition.get();
 
         boolean isAssigned = employeeRepository.existsByUserPositionIdAndDeletedFalse(id);
-        if (isAssigned) {
+
+        if (isAssigned)
             return ApiResult.error("Cannot delete position because it is assigned to employees.");
-        }
+
+        positionPermissionRepository.deleteAllByPosition_Id(id);
 
         position.setDeleted(true);
         positionRepository.save(position);
 
         return ApiResult.success("Position deleted successfully");
+    }
+
+    private void updatePositionPermissions(Position position, List<PermissionEnum> permissions) {
+        positionPermissionRepository.deleteAllByPosition_Id(position.getId());
+
+        List<PositionPermission> positionPermissions = permissions.stream()
+                .map(permission -> new PositionPermission(position, permission))
+                .toList();
+
+        positionPermissionRepository.saveAll(positionPermissions);
     }
 
 }

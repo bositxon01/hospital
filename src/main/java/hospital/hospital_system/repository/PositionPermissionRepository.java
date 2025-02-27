@@ -9,7 +9,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PositionPermissionRepository extends JpaRepository<PositionPermission, Integer> {
+
     @Modifying
     @Query("DELETE FROM PositionPermission p WHERE p.position.id = :id")
     void deleteAllByPosition_Id(@Param("id") Integer id);
+
 }

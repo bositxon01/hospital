@@ -10,10 +10,17 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Data
 public class AppointmentGetDTO {
+
     private Integer id;
-    private Integer employeeId;
-    private Integer patientId;
-    private Integer roomId;
+
+    private EmployeeDTO employee;
+
+    private PatientDTO patient;
+
+    private RoomDTO room;
+
     private Timestamp appointmentTime;
-    private Integer appointmentResultId;
+
+    private AppointmentResultDTO appointmentResultId;
+
 }

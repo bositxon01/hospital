@@ -13,8 +13,9 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Data
 public class TurnDTO {
+
     private Integer id;
-    //    @NotNull(message = "Turn name is required")
+
     @ValidEnum(enumClass = TurnEnum.class, message = "Invalid turn name")
     private TurnEnum name;
 
@@ -23,4 +24,5 @@ public class TurnDTO {
 
     @NotNull(message = "End-time is required")
     private LocalTime endTime;
+
 }

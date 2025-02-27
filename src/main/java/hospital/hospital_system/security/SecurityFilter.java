@@ -33,10 +33,9 @@ import static hospital.hospital_system.utils.AuthConstants.BEARER_PREFIX;
 @Component
 @RequiredArgsConstructor
 public class SecurityFilter extends OncePerRequestFilter {
+
     private final JWTProvider jwtProvider;
-
     private final PasswordEncoder passwordEncoder;
-
     private final AuthService authService;
 
     @Override

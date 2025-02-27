@@ -10,6 +10,7 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidEnum {
+
     Class<? extends Enum<?>> enumClass();
 
     String message() default "Invalid enum value";
@@ -17,4 +18,5 @@ public @interface ValidEnum {
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
 }

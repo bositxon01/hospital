@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,11 +47,6 @@ public class AttachmentController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResult<AttachmentDTO>> getAttachment(@PathVariable Integer id) {
         ApiResult<AttachmentDTO> result = attachmentService.getAttachmentById(id);
-
-        if (!result.isSuccess()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
-        }
-
         return ResponseEntity.ok(result);
     }
 
@@ -66,11 +60,7 @@ public class AttachmentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResult<String>> deleteAttachment(@PathVariable Integer id) {
         ApiResult<String> result = attachmentService.deleteAttachment(id);
-
-        if (!result.isSuccess()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
-        }
-
         return ResponseEntity.ok(result);
     }
+
 }

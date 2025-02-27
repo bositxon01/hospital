@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class LoginDTO {
+
     @NotBlank(message = "Username is required")
     private String username;
 
     @NotBlank(message = "Password is required")
     private String password;
+
 }

@@ -10,12 +10,13 @@ import java.util.Optional;
 
 @Repository
 public interface WorkTimeRepository extends JpaRepository<WorkTime, Integer> {
+
     boolean existsByEmployeeIdAndTurnIdAndDayAndDeletedFalse(Integer employeeId, Integer turnId, DayEnum day);
 
-    List<WorkTime> findByEmployeeIdAndDayAndDeletedFalse(Integer employeeId, DayEnum day);
+    Optional<WorkTime> findByIdAndDeletedFalse(Integer id);
 
     List<WorkTime> findByDeletedFalse();
 
-    Optional<WorkTime> findByIdAndDeletedFalse(Integer id);
+    List<WorkTime> findByEmployeeIdAndDayAndDeletedFalse(Integer employeeId, DayEnum day);
 
 }

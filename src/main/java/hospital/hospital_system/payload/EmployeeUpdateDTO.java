@@ -10,10 +10,15 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Data
 public class EmployeeUpdateDTO {
+
     private String firstName;
+
     private String lastName;
+
     private LocalDate birthDate;
+
     private String specialization;
+
     private Integer positionId;
 
 }

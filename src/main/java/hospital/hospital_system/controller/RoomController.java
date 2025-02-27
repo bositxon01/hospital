@@ -17,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Room API", description = "Room CRUD API")
 public class RoomController {
+
     private final RoomService roomService;
 
     @CheckAuth(permissions = PermissionEnum.VIEW_ROOM)
@@ -29,7 +30,7 @@ public class RoomController {
     @CheckAuth(permissions = PermissionEnum.VIEW_ROOM)
     @GetMapping("/{id}")
     public ResponseEntity<ApiResult<RoomDTO>> getRoom(@PathVariable Integer id) {
-        ApiResult<RoomDTO> roomDto = roomService.getRoom(id);
+        ApiResult<RoomDTO> roomDto = roomService.getRoomById(id);
         return ResponseEntity.ok(roomDto);
     }
 
@@ -49,8 +50,9 @@ public class RoomController {
 
     @CheckAuth(permissions = PermissionEnum.DELETE_ROOM)
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResult<RoomDTO>> deleteRoom(@PathVariable Integer id) {
-        ApiResult<RoomDTO> delete = roomService.deleteRoom(id);
+    public ResponseEntity<ApiResult<String>> deleteRoom(@PathVariable Integer id) {
+        ApiResult<String> delete = roomService.deleteRoom(id);
         return ResponseEntity.ok(delete);
     }
+
 }

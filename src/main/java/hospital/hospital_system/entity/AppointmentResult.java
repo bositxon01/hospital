@@ -31,4 +31,5 @@ public class AppointmentResult extends AbsIntegerEntity {
 
     @OneToOne
     private Appointment nextAppointment;
+
 }

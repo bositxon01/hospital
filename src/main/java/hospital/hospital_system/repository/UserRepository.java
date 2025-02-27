@@ -10,8 +10,10 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
+
+    boolean existsByUsernameAndDeletedFalse(String username);
+
     @EntityGraph(attributePaths = {"position.positionPermissionList"})
     Optional<User> findByUsernameAndDeletedFalse(@NotBlank String username);
 
-    boolean existsByUsernameAndDeletedFalse(String username);
 }

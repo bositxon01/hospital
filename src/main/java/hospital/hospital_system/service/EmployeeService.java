@@ -3,12 +3,13 @@ package hospital.hospital_system.service;
 import hospital.hospital_system.payload.*;
 
 import java.util.List;
+import java.util.Objects;
 
 public interface EmployeeService {
 
-    ApiResult<List<EmployeeGetDTO>> getAllEmployees();
-
     ApiResult<EmployeeGetDTO> getEmployeeById(Integer id);
+
+    ApiResult<List<EmployeeGetDTO>> getAllEmployees();
 
     ApiResult<EmployeeAndUserDTO> createEmployee(EmployeeAndUserDTO employeeDTO);
 
@@ -18,5 +19,6 @@ public interface EmployeeService {
 
     ApiResult<?> verify(String email, String code);
 
-    ApiResult<String> updateEmployeeAttachment(EmployeeAttachmentDto attachmentDto);
+    ApiResult<Object> updateEmployeeAttachment(EmployeeAttachmentDto attachmentDto);
+
 }

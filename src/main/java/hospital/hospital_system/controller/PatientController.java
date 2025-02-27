@@ -18,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Patient API", description = "Patient CRUD API")
 public class PatientController {
+
     public final PatientService patientService;
 
     @CheckAuth(permissions = PermissionEnum.VIEW_PATIENT)
@@ -41,10 +42,19 @@ public class PatientController {
         return ResponseEntity.ok(patientDTOApiResult);
     }
 
+    @CheckAuth(permissions = PermissionEnum.EDIT_PATIENT)
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResult<PatientDTO>> updatePatient(@PathVariable Integer id,
+                                                               @Valid @RequestBody PatientDTO patientDTO) {
+        ApiResult<PatientDTO> apiResult = patientService.updatePatient(id, patientDTO);
+        return ResponseEntity.ok(apiResult);
+    }
+
     @CheckAuth(permissions = PermissionEnum.DELETE_PATIENT)
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResult<PatientDTO>> deletePatient(@PathVariable Integer id) {
-        ApiResult<PatientDTO> patientDTOApiResult = patientService.deletePatient(id);
+    public ResponseEntity<ApiResult<String>> deletePatient(@PathVariable Integer id) {
+        ApiResult<String> patientDTOApiResult = patientService.deletePatient(id);
         return ResponseEntity.ok(patientDTOApiResult);
     }
+
 }

@@ -18,6 +18,7 @@ import java.util.List;
 @RequestMapping("/turn")
 @Tag(name = "Turn API", description = "Turn CRUD API")
 public class TurnController {
+
     private final TurnService turnService;
 
     @CheckAuth(permissions = PermissionEnum.CREATE_TURN)
@@ -29,14 +30,14 @@ public class TurnController {
 
     @CheckAuth(permissions = PermissionEnum.VIEW_TURN)
     @GetMapping
-    public ResponseEntity<?> getTurns() {
+    public ResponseEntity<ApiResult<List<TurnDTO>>> getTurns() {
         ApiResult<List<TurnDTO>> apiResult = turnService.getAllTurns();
         return ResponseEntity.ok(apiResult);
     }
 
     @CheckAuth(permissions = PermissionEnum.VIEW_TURN)
     @GetMapping("/{id}")
-    public ResponseEntity<?> getTurn(@PathVariable int id) {
+    public ResponseEntity<ApiResult<TurnDTO>> getTurn(@PathVariable int id) {
         ApiResult<TurnDTO> apiResult = turnService.getTurnById(id);
         return ResponseEntity.ok(apiResult);
     }

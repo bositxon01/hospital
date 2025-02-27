@@ -34,4 +34,5 @@ public class Room extends AbsIntegerEntity {
     @OneToMany(mappedBy = "room")
     @ToString.Exclude
     private List<EmployeeRoom> employeeRooms;
+
 }

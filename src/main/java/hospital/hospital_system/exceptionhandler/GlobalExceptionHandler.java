@@ -20,6 +20,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ApiResult<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException exception) {
         Map<String, String> errors = new HashMap<>();
+
         exception
                 .getBindingResult()
                 .getFieldErrors()
@@ -50,7 +51,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UsernameNotFoundException.class)
     public ApiResult<Map<String, String>> handleUsernameNotFoundExceptions(UsernameNotFoundException exception) {
         Map<String, String> errors = new HashMap<>();
+
         errors.put("username", exception.getMessage());
+
         return ApiResult.error("Username not found", errors);
     }
 
@@ -60,4 +63,5 @@ public class GlobalExceptionHandler {
     public ApiResult<String> handleRuntimeExceptions(RuntimeException exception) {
         return ApiResult.error("Something went wrong: " + exception.getMessage());
     }
+
 }

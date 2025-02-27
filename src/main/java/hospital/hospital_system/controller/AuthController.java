@@ -29,17 +29,12 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/verify-reset-code")
-    public ResponseEntity<ApiResult<String>> verifyResetCode(@RequestParam String email,
-                                                             @RequestParam String code) {
-        ApiResult<String> response = authService.verifyResetCode(email, code);
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResult<String>> resetPassword(@RequestParam String email,
+                                                           @RequestParam String code,
+                                                           @RequestParam String newPassword) {
+        ApiResult<String> response = authService.resetPassword(email, code, newPassword);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<ApiResult<String>> resetPassword(@RequestParam String email,
-                                                           @RequestParam String newPassword) {
-        ApiResult<String> response = authService.resetPassword(email, newPassword);
-        return ResponseEntity.ok(response);
-    }
 }
