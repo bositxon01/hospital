@@ -13,28 +13,28 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static hospital.hospital_system.utils.AuthConstants.SUPER_ADMIN;
+import static hospital.hospital_system.utils.AuthConstants.SUPER_ADMIN_GMAIL;
+
 @RequiredArgsConstructor
 @Component
 public class SuperAdminConfig {
+
     private final PositionRepository positionRepository;
-
     private final PositionPermissionRepository positionPermissionRepository;
-
     private final UserRepository userRepository;
-
     private final EmployeeRepository employeeRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final RoomRepository roomRepository;
+
 
     @PostConstruct
     public void init() {
-        Position position = positionRepository.findPositionByName("SUPERADMIN")
+        Position position = positionRepository.findPositionByNameAndDeletedFalse(SUPER_ADMIN)
                 .orElseGet(
                         () -> {
                             Position onePosition = new Position();
-                            onePosition.setName("SUPERADMIN");
+                            onePosition.setName(SUPER_ADMIN);
                             onePosition.setSalary(10000.9);
                             positionRepository.save(onePosition);
 
@@ -55,8 +55,9 @@ public class SuperAdminConfig {
                 );
 
         User user = new User();
-        if (userRepository.findByUsername("SUPERADMIN@gmail.com").isEmpty()) {
-            user.setUsername("SUPERADMIN@gmail.com");
+
+        if (userRepository.findByUsernameAndDeletedFalse(SUPER_ADMIN_GMAIL).isEmpty()) {
+            user.setUsername(SUPER_ADMIN_GMAIL);
             user.setPassword(passwordEncoder.encode("SUPERPASSWORD"));
             user.setPosition(position);
             userRepository.save(user);
@@ -65,12 +66,14 @@ public class SuperAdminConfig {
             LocalDate birthDate = LocalDate.of(1990, 1, 1);
 
             Employee employee = new Employee();
-            employee.setFirstName("SUPERADMIN");
-            employee.setLastName("SUPERADMIN");
+            employee.setFirstName(SUPER_ADMIN);
+            employee.setLastName(SUPER_ADMIN);
             employee.setDateOfBirth(birthDate);
-            employee.setSpecialization("SUPERADMIN");
+            employee.setSpecialization(SUPER_ADMIN);
             employee.setUser(user);
+
             employeeRepository.save(employee);
+
             roomInit();
         }
     }
@@ -82,4 +85,5 @@ public class SuperAdminConfig {
             roomRepository.save(room);
         }
     }
+
 }

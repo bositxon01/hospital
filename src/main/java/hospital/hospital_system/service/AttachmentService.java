@@ -4,8 +4,6 @@ import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.AttachmentDTO;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.UUID;
-
 public interface AttachmentService {
 
     ApiResult<AttachmentDTO> upload(MultipartFile multipartFile);
@@ -13,4 +11,5 @@ public interface AttachmentService {
     ApiResult<AttachmentDTO> getAttachmentById(Integer id);
 
     ApiResult<String> deleteAttachment(Integer id);
+
 }

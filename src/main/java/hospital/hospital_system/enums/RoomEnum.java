@@ -1,6 +1,7 @@
 package hospital.hospital_system.enums;
 
 public enum RoomEnum {
+
     ROOM_1,
     ROOM_2,
     ROOM_3,
@@ -41,4 +42,5 @@ public enum RoomEnum {
     ROOM_38,
     ROOM_39,
     ROOM_40
+
 }

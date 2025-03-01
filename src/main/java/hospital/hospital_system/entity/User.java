@@ -21,9 +21,10 @@ import java.util.List;
 @ToString
 @Entity(name = "users")
 
-@SQLRestriction(value = "is_deleted=false")
-@SQLDelete(sql = ("update users set is_deleted=true where id=?"))
+@SQLRestriction(value = "deleted=false")
+@SQLDelete(sql = ("UPDATE users SET deleted=true WHERE id=?"))
 public class User extends AbsIntegerEntity implements UserDetails {
+
     @NotBlank
     @Email
     @Column(unique = true, nullable = false)
@@ -56,4 +57,5 @@ public class User extends AbsIntegerEntity implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Patient> patients;
+
 }

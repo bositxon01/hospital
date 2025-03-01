@@ -6,13 +6,15 @@ import hospital.hospital_system.payload.EmployeeRoomDTO;
 import java.util.List;
 
 public interface EmployeeRoomService {
-    ApiResult<List<EmployeeRoomDTO>> getAllEmployeeRooms();
 
-    ApiResult<EmployeeRoomDTO> getEmployeeRoomById(Long id);
+    ApiResult<EmployeeRoomDTO> getEmployeeRoomById(Integer id);
+
+    ApiResult<List<EmployeeRoomDTO>> getAllEmployeeRooms();
 
     ApiResult<EmployeeRoomDTO> createEmployeeRoom(EmployeeRoomDTO employeeRoomDTO);
 
-    ApiResult<EmployeeRoomDTO> updateEmployeeRoom(Long id, EmployeeRoomDTO employeeRoomDTO);
+    ApiResult<EmployeeRoomDTO> updateEmployeeRoom(Integer id, EmployeeRoomDTO employeeRoomDTO);
 
-    ApiResult<EmployeeRoomDTO> deleteEmployeeRoom(Long id);
+    ApiResult<String> deleteEmployeeRoom(Integer id);
+
 }

@@ -2,19 +2,19 @@ package hospital.hospital_system.service;
 
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.TurnDTO;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public interface TurnService {
-    ApiResult<String> create(TurnDTO turnDTO);
 
-    ApiResult<List<TurnDTO>> getAll();
+    ApiResult<TurnDTO> getTurnById(Integer id);
 
-    ApiResult<TurnDTO> getById(int id);
+    ApiResult<List<TurnDTO>> getAllTurns();
 
-    ApiResult<String> update(Integer id, TurnDTO turnDTO);
+    ApiResult<TurnDTO> createTurn(TurnDTO turnDTO);
 
-    ApiResult<String> delete(int id);
+    ApiResult<TurnDTO> updateTurn(Integer id, TurnDTO turnDTO);
+
+    ApiResult<String> deleteTurn(Integer id);
+
 }

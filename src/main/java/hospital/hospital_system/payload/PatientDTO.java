@@ -1,21 +1,24 @@
 package hospital.hospital_system.payload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import hospital.hospital_system.aop.ValidEnum;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
+@FieldNameConstants
 public class PatientDTO {
+
     private Integer id;
 
     @NotBlank(message = "Firstname is required")
@@ -38,12 +41,4 @@ public class PatientDTO {
     @NotNull(message = "Complaint is required")
     private ComplaintDTO complaintDTO;
 
-    public PatientDTO(Integer id, String firstName, String lastName, LocalDate dateOfBirth, String username, ComplaintDTO complaintDTO) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.dateOfBirth = dateOfBirth;
-        this.username = username;
-        this.complaintDTO = complaintDTO;
-    }
 }

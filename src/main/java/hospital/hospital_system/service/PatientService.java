@@ -2,17 +2,19 @@ package hospital.hospital_system.service;
 
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.PatientDTO;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public interface PatientService {
-    ApiResult<List<PatientDTO>> getAllPatients();
 
     ApiResult<PatientDTO> getPatient(Integer id);
 
-    ApiResult<PatientDTO> create(PatientDTO patientDTO);
+    ApiResult<List<PatientDTO>> getAllPatients();
 
-    ApiResult<PatientDTO> delete(Integer id);
+    ApiResult<PatientDTO> createPatient(PatientDTO patientDTO);
+
+    ApiResult<PatientDTO> updatePatient(Integer id, PatientDTO patientDTO);
+
+    ApiResult<String> deletePatient(Integer id);
+
 }

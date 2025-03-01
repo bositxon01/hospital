@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Data
 public class EmployeeDTO {
+
     private Integer id;
 
     @NotBlank(message = "Firstname is required")
@@ -26,10 +27,4 @@ public class EmployeeDTO {
     @NotBlank(message = "Specialization is required")
     private String specialization;
 
-    public EmployeeDTO(String firstName, String lastName, LocalDate birthDate, String specialization) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.birthDate = birthDate;
-        this.specialization = specialization;
-    }
 }

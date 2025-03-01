@@ -1,4 +1,4 @@
-package hospital.hospital_system.payload;
+package hospital.hospital_system.utils;
 
 import hospital.hospital_system.entity.Employee;
 import hospital.hospital_system.entity.User;
@@ -10,9 +10,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class VerificationInfo {
+
     private String code;
+
     private User user;
+
     private Employee employee;
+
     private long expiryTime;
+
     private int attempts;
+
 }

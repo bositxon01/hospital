@@ -3,6 +3,8 @@ package hospital.hospital_system.entity;
 import hospital.hospital_system.enums.RoomEnum;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
@@ -13,6 +15,9 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
+
+@SQLRestriction(value = "deleted=false")
+@SQLDelete(sql = ("UPDATE room SET deleted=true WHERE id=?"))
 public class Room extends AbsIntegerEntity {
 
     @Column(nullable = false)
@@ -29,4 +34,5 @@ public class Room extends AbsIntegerEntity {
     @OneToMany(mappedBy = "room")
     @ToString.Exclude
     private List<EmployeeRoom> employeeRooms;
+
 }

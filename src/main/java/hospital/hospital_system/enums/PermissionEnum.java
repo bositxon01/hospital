@@ -1,6 +1,7 @@
 package hospital.hospital_system.enums;
 
 public enum PermissionEnum {
+
     CREATE_COMPLAINT,
     EDIT_COMPLAINT,
     DELETE_COMPLAINT,
@@ -64,5 +65,6 @@ public enum PermissionEnum {
     CREATE_POSITION_PERMISSION,
     EDIT_POSITION_PERMISSION,
     DELETE_POSITION_PERMISSION,
-    VIEW_POSITION_PERMISSION,
+    VIEW_POSITION_PERMISSION
+
 }

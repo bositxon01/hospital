@@ -41,7 +41,8 @@ public class CheckAuthAspect {
             return;
         }
 
-        List<PermissionEnum> userPermissions = user.getPosition().getPositionPermissionList()
+        List<PermissionEnum> userPermissions = user.getPosition()
+                .getPositionPermissionList()
                 .stream()
                 .map(PositionPermission::getPermission)
                 .toList();
@@ -55,4 +56,5 @@ public class CheckAuthAspect {
         throw new AccessDeniedException("Access denied");
 
     }
+
 }

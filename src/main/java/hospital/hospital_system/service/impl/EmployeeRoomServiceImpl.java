@@ -3,6 +3,7 @@ package hospital.hospital_system.service.impl;
 import hospital.hospital_system.entity.Employee;
 import hospital.hospital_system.entity.EmployeeRoom;
 import hospital.hospital_system.entity.Room;
+import hospital.hospital_system.mapper.EmployeeRoomMapper;
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.EmployeeRoomDTO;
 import hospital.hospital_system.repository.EmployeeRepository;
@@ -13,85 +14,99 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class EmployeeRoomServiceImpl implements EmployeeRoomService {
+
     private final EmployeeRoomRepository employeeRoomRepository;
     private final RoomRepository roomRepository;
     private final EmployeeRepository employeeRepository;
+    private final EmployeeRoomMapper employeeRoomMapper;
 
     @Override
     public ApiResult<List<EmployeeRoomDTO>> getAllEmployeeRooms() {
-        List<EmployeeRoomDTO> employeeRoomDTOs = employeeRoomRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-        return ApiResult.success(employeeRoomDTOs);
+        List<EmployeeRoom> employeeRoomList = employeeRoomRepository.findByDeletedFalse();
+
+        if (employeeRoomList.isEmpty())
+            return ApiResult.success("EmployeeRooms not found");
+
+        return ApiResult.success(employeeRoomMapper.toDTO(employeeRoomList));
     }
 
     @Override
-    public ApiResult<EmployeeRoomDTO> getEmployeeRoomById(Long id) {
-        EmployeeRoom employeeRoom = employeeRoomRepository.findById(Math.toIntExact(id)).orElse(null);
-        if (employeeRoom == null) {
-            return ApiResult.error("EmployeeRoom not found");
-        }
-        return ApiResult.success(convertToDTO(employeeRoom));
+    public ApiResult<EmployeeRoomDTO> getEmployeeRoomById(Integer id) {
+        return employeeRoomRepository.findByIdAndDeletedFalse(id)
+                .map(employeeRoomMapper::toDTO)
+                .map(ApiResult::success)
+                .orElse(ApiResult.success("EmployeeRoom not found with id " + id));
     }
 
     @Override
     public ApiResult<EmployeeRoomDTO> createEmployeeRoom(EmployeeRoomDTO employeeRoomDTO) {
-        Room room = roomRepository.findById(employeeRoomDTO.getRoomId()).orElse(null);
-        Employee employee = employeeRepository.findById(employeeRoomDTO.getEmployeeId()).orElse(null);
+        Optional<Room> optionalRoom = roomRepository.findByIdAndDeletedFalse(employeeRoomDTO.getRoomId());
 
-        if (room == null || employee == null) {
-            return ApiResult.error("Room or Employee not found");
-        }
+        if (optionalRoom.isEmpty())
+            return ApiResult.success("Room not found with id " + employeeRoomDTO.getRoomId());
 
-        EmployeeRoom employeeRoom = new EmployeeRoom();
-        employeeRoom.setRoom(room);
-        employeeRoom.setEmployee(employee);
+        Optional<Employee> optionalEmployee = employeeRepository.findByIdAndDeletedFalse(employeeRoomDTO.getEmployeeId());
+
+        if (optionalEmployee.isEmpty())
+            return ApiResult.error("Employee not found with id " + employeeRoomDTO.getEmployeeId());
+
+        EmployeeRoom employeeRoom = employeeRoomMapper.toEntity(employeeRoomDTO);
+
+        employeeRoom.setEmployee(optionalEmployee.get());
+        employeeRoom.setRoom(optionalRoom.get());
+
         employeeRoomRepository.save(employeeRoom);
 
-        return ApiResult.success(convertToDTO(employeeRoom));
+        return ApiResult.success("EmployeeRoom created successfully", employeeRoomMapper.toDTO(employeeRoom));
     }
 
     @Override
-    public ApiResult<EmployeeRoomDTO> updateEmployeeRoom(Long id, EmployeeRoomDTO employeeRoomDTO) {
-        EmployeeRoom employeeRoom = employeeRoomRepository.findById(Math.toIntExact(id)).orElse(null);
-        if (employeeRoom == null) {
-            return ApiResult.error("EmployeeRoom not found");
-        }
+    public ApiResult<EmployeeRoomDTO> updateEmployeeRoom(Integer id, EmployeeRoomDTO employeeRoomDTO) {
+        Optional<EmployeeRoom> optionalEmployeeRoom = employeeRoomRepository.findByIdAndDeletedFalse(id);
 
-        Room room = roomRepository.findById(employeeRoomDTO.getRoomId()).orElse(null);
-        Employee employee = employeeRepository.findById(employeeRoomDTO.getEmployeeId()).orElse(null);
+        if (optionalEmployeeRoom.isEmpty())
+            return ApiResult.error("EmployeeRoom not found with id " + id);
 
-        if (room == null || employee == null) {
-            return ApiResult.error("Room or Employee not found");
-        }
+        Optional<Room> optionalRoom = roomRepository.findByIdAndDeletedFalse(employeeRoomDTO.getRoomId());
 
-        employeeRoom.setRoom(room);
-        employeeRoom.setEmployee(employee);
+        if (optionalRoom.isEmpty())
+            return ApiResult.error("Room not found with id " + employeeRoomDTO.getRoomId());
+
+        Optional<Employee> optionalEmployee = employeeRepository.findByIdAndDeletedFalse(employeeRoomDTO.getEmployeeId());
+
+        if (optionalEmployee.isEmpty())
+            return ApiResult.error("Employee not found with id " + employeeRoomDTO.getEmployeeId());
+
+        EmployeeRoom employeeRoom = optionalEmployeeRoom.get();
+
+        employeeRoomMapper.updateEntity(employeeRoom, employeeRoomDTO);
+
+        employeeRoom.setRoom(optionalRoom.get());
+        employeeRoom.setEmployee(optionalEmployee.get());
+
         employeeRoomRepository.save(employeeRoom);
 
-        return ApiResult.success(convertToDTO(employeeRoom));
+        return ApiResult.success("EmployeeRoom updated successfully", employeeRoomMapper.toDTO(employeeRoom));
     }
 
     @Override
-    public ApiResult<EmployeeRoomDTO> deleteEmployeeRoom(Long id) {
-        EmployeeRoom employeeRoom = employeeRoomRepository.findById(Math.toIntExact(id)).orElse(null);
-        if (employeeRoom == null) {
-            return ApiResult.error("EmployeeRoom not found");
-        }
-        employeeRoomRepository.delete(employeeRoom);
-        return ApiResult.success(convertToDTO(employeeRoom));
+    public ApiResult<String> deleteEmployeeRoom(Integer id) {
+        Optional<EmployeeRoom> optionalEmployeeRoom = employeeRoomRepository.findByIdAndDeletedFalse(id);
+
+        if (optionalEmployeeRoom.isEmpty())
+            return ApiResult.error("EmployeeRoom not found with id " + id);
+
+        EmployeeRoom employeeRoom = optionalEmployeeRoom.get();
+
+        employeeRoom.setDeleted(true);
+        employeeRoomRepository.save(employeeRoom);
+
+        return ApiResult.success("EmployeeRoom deleted successfully");
     }
 
-    private EmployeeRoomDTO convertToDTO(EmployeeRoom employeeRoom) {
-        return new EmployeeRoomDTO(
-                employeeRoom.getId(),
-                employeeRoom.getEmployee().getId(),
-                employeeRoom.getRoom().getId()
-        );
-    }
 }

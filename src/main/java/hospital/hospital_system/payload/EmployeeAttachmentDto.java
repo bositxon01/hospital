@@ -9,8 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class EmployeeAttachmentDto {
+
     @NotNull(message = "Employee id can not be null")
     private Integer employeeId;
+
     @NotNull(message = "Attachment id can not be null")
     private Integer attachmentId;
+
 }

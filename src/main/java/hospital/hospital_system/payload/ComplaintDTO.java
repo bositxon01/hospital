@@ -9,8 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ComplaintDTO {
+
     @NotBlank(message = "Complaint name is required")
     private String name;
 
     private String description;
+
 }

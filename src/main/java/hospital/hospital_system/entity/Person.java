@@ -5,6 +5,8 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 
@@ -14,7 +16,7 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @MappedSuperclass
-public class Person extends AbsIntegerEntity {
+public abstract class Person extends AbsIntegerEntity {
 
     @NotBlank(message = "Firstname cannot be blank")
     @Column(nullable = false)

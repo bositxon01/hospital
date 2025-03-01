@@ -3,6 +3,8 @@ package hospital.hospital_system.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -13,7 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @MappedSuperclass
-public class AbsIntegerEntity {
+public abstract class AbsIntegerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -25,5 +27,5 @@ public class AbsIntegerEntity {
     @UpdateTimestamp
     private LocalDateTime updated_at;
 
-    private boolean isDeleted;
+    private boolean deleted;
 }

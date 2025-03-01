@@ -2,21 +2,19 @@ package hospital.hospital_system.service;
 
 import hospital.hospital_system.payload.ApiResult;
 import hospital.hospital_system.payload.PositionDTO;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public interface PositionService {
+
+    ApiResult<PositionDTO> getPositionById(Integer id);
+
     ApiResult<List<PositionDTO>> getAllPositions();
 
-    ApiResult<PositionDTO> getPosition(Integer id);
+    ApiResult<PositionDTO> createPosition(PositionDTO positionDTO);
 
-    ApiResult<PositionDTO> create(PositionDTO positionDTO);
+    ApiResult<PositionDTO> updatePosition(Integer id, PositionDTO positionDTO);
 
-    ApiResult<PositionDTO> update(Integer id, PositionDTO positionDTO);
+    ApiResult<String> deletePosition(Integer id);
 
-    ApiResult<PositionDTO> delete(Integer id);
 }
-
-

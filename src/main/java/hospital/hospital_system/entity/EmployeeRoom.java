@@ -1,7 +1,10 @@
 package hospital.hospital_system.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -9,6 +12,9 @@ import lombok.*;
 @Setter
 @ToString
 @Entity
+
+@SQLRestriction(value = "deleted=false")
+@SQLDelete(sql = ("UPDATE employee_room SET deleted=true WHERE id=?"))
 public class EmployeeRoom extends AbsIntegerEntity {
 
     @ManyToOne
