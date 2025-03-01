@@ -16,17 +16,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 public class SuperAdminConfig {
+
     private final PositionRepository positionRepository;
-
     private final PositionPermissionRepository positionPermissionRepository;
-
     private final UserRepository userRepository;
-
     private final EmployeeRepository employeeRepository;
-
-    private final PasswordEncoder passwordEncoder;
-
     private final RoomRepository roomRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
     public void init() {

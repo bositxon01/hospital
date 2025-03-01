@@ -16,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,6 +29,8 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     private final AttachmentRepository attachmentRepository;
 
+    private final static int MAX_FILE_SIZE = 100 * 1024 * 1024;
+
     @Override
     public ApiResult<AttachmentDTO> upload(MultipartFile multipartFile) {
         try {
@@ -40,10 +41,12 @@ public class AttachmentServiceImpl implements AttachmentService {
             String contentType = multipartFile.getContentType();
 
             long size = multipartFile.getSize();
-            if (size > 100 * 1024 * 1024) {  // 100MB
+
+            if (size > MAX_FILE_SIZE) {
                 return ApiResult.error("File is too large");
             }
-            if (!Objects.requireNonNull(contentType).startsWith("image/")) {  // Rasm bo'lishi kerak
+
+            if (!Objects.requireNonNull(contentType).startsWith("image/")) {
                 return ApiResult.error("Invalid file type");
             }
 

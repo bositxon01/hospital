@@ -16,6 +16,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class TurnServiceImpl implements TurnService {
+
     private final TurnRepository turnRepository;
 
     @Override

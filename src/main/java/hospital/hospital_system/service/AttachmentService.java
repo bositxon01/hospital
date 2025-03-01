@@ -13,4 +13,5 @@ public interface AttachmentService {
     ApiResult<AttachmentDTO> getAttachmentById(Integer id);
 
     ApiResult<String> deleteAttachment(Integer id);
+
 }

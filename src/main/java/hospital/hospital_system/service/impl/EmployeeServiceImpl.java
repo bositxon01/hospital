@@ -31,7 +31,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final PositionRepository positionRepository;
     private final EmailService emailService;
 
-
     private final Map<String, VerificationInfo> verificationData = new ConcurrentHashMap<>();
 
     private static final Integer EXPIRY_TIME = 60_000;
@@ -46,7 +45,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ApiResult.success(list);
     }
 
-
     @Override
     public ApiResult<EmployeeGetDTO> getEmployeeById(Integer id) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
@@ -59,7 +57,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         EmployeeGetDTO employeeGetDTO = getEmployeeGetDTO(employee);
         return ApiResult.success(employeeGetDTO);
     }
-
 
     @Override
     @Transactional
@@ -78,7 +75,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         user.setUsername(userEmail);
         user.setPassword(passwordEncoder.encode(employeeDTO.getPassword()));
         user.setPosition(optionalPosition.get());
-//        userRepository.save(user);
 
         Optional<Attachment> optionalAttachment;
         Employee employee = new Employee();
@@ -111,8 +107,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
         emailService.sendVerificationEmail(userEmail, verificationCode);
-
-        // frontda boshqa page ochilib code  kiritadi
 
         return ApiResult.success("Verification code sent to " + userEmail);
     }
@@ -161,7 +155,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ApiResult.success("Employee deleted successfully");
     }
 
-
     @Override
     @Transactional
     public ApiResult<?> verify(String email, String code) {
@@ -172,7 +165,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             verificationData.remove(email);
             return ApiResult.error("The verification code has expired. Please request a new one.");
         }
-
 
         // Noto‘g‘ri kod kiritilgan holat
         if (!code.equals(verificationInfo.getCode())) {
@@ -218,7 +210,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ApiResult.success("Employee updated successfully");
     }
 
-
     private EmployeeGetDTO getEmployeeGetDTO(Employee employee) {
         EmployeeGetDTO employeeGetDTO = new EmployeeGetDTO();
         employeeGetDTO.setId(employee.getId());
@@ -235,7 +226,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeGetDTO.setSalary(employee.getUser().getPosition().getSalary());
         return employeeGetDTO;
     }
-
 
     private static String getVerificationCode() {
         return String.valueOf(new Random().nextInt(100000, 999999));

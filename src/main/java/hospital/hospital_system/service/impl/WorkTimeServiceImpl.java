@@ -18,6 +18,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class WorkTimeServiceImpl implements WorkTimeService {
+
     private final WorkTimeRepository workTimeRepository;
     private final EmployeeRepository employeeRepository;
     private final TurnRepository turnRepository;

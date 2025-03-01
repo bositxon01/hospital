@@ -23,12 +23,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PatientServiceImpl implements PatientService {
+
     private final UserRepository userRepository;
-
     private final ComplaintRepository complaintRepository;
-
     private final PatientRepository patientRepository;
-
     private final PasswordEncoder passwordEncoder;
 
     @Override

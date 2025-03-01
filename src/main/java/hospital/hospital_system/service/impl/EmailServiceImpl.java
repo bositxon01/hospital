@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
+
     private final JavaMailSender mailSender;
 
     public void sendVerificationEmail(String to, String code) {

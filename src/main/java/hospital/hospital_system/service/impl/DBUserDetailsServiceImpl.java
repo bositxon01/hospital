@@ -1,17 +1,12 @@
 package hospital.hospital_system.service.impl;
 
-import hospital.hospital_system.entity.User;
 import hospital.hospital_system.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-
-import java.util.Optional;
-
 @Service
-
 public class DBUserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -22,11 +17,10 @@ public class DBUserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.findByUsername(username);
-        if (optionalUser.isEmpty()) {
-            throw new UsernameNotFoundException(username);
-        }
 
-        return optionalUser.get();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found with username: " + username));
     }
+
 }

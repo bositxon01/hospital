@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class EmployeeRoomServiceImpl implements EmployeeRoomService {
+
     private final EmployeeRoomRepository employeeRoomRepository;
     private final RoomRepository roomRepository;
     private final EmployeeRepository employeeRepository;
